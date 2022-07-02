@@ -7,12 +7,13 @@
 	<body>
 
         <a-scene id="scene">
-            <a-entity 
-                id="cursor" 
-                position="0 1.6 -1" 
-                rotation="0 0 0" 
-                color="red" 
-                geometry="primitive: box; width: .1; height: .1; depth: .001">
+            <a-assets>
+                <img id="cursor-img" src="./img/cursor.png">
+            </a-assets>
+            <a-entity id="cursor">
+                <a-entity>
+                    <a-image src="#cursor-img" height=".1" width=".1"></a-image>
+                </a-entity>
             </a-entity>
             <a-box 
                 visible="false"

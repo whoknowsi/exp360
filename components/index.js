@@ -44,6 +44,9 @@ function onPointerMove(event) {
     let rotationCameraYRad = cameraRotation.y / 180
     let rotationCameraXRad = cameraRotation.x / 180
 
+    magicNumberX = innerWidth / magicNumber
+    magicNumberY = innerHeight / magicNumber
+
     cosTheta = (Math.cos(rotationCameraXRad * piRad))
     senTheta = (Math.sin(rotationCameraXRad * piRad))
     cosAlpha = (Math.cos(rotationCameraYRad * piRad))
@@ -62,10 +65,14 @@ function onPointerMove(event) {
     let fixedMovementMouseY = (heightRangeFromMinusOneToOne * magicNumberY) * cosTheta
     let fixedMovementMouseZForX = (widthRangeFromMinusOneToOne * magicNumberX) * senAlpha
     let fixedMovementMouseZForY = (heightRangeFromMinusOneToOne * magicNumberY) * senTheta * cosAlpha
+    
+    // Se necesita para compensar el tamaño del cursor
+    let fixSizeWidth = 1.1
+    let fixSizeHeight = 1.1
 
-    pointer.x = centerX + fixedMovementMouseX + fixedMovementMouseXForY
-    pointer.y = centerY - fixedMovementMouseY + 1.6
-    pointer.z = centerZ - fixedMovementMouseZForX - fixedMovementMouseZForY
+    pointer.x = (centerX + fixedMovementMouseX + fixedMovementMouseXForY) * fixSizeWidth
+    pointer.y = (centerY - fixedMovementMouseY) * fixSizeHeight  + 1.6 
+    pointer.z = (centerZ - fixedMovementMouseZForX - fixedMovementMouseZForY) * fixSizeWidth
 
     cursor.setAttribute("rotation", camera.getAttribute("rotation").x + " " + camera.getAttribute("rotation").y + + " " + camera.getAttribute("rotation").z)
 
@@ -86,10 +93,6 @@ function SaveInitialValues() {
     // Número necesario para que ande bien con 0.001 de profundidad
     // se cambia si se cambia la profundidad
     magicNumber = 690
-
-    magicNumberX = innerWidth / magicNumber
-    magicNumberY = innerHeight / magicNumber
-
     piRad = Math.PI
 }
 
