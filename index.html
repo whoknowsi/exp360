@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script> 
+        <script type="module" src="./components/raycaster-listener.js"></script>
+	</head>
+	<body>
+
+        <a-scene id="scene">
+            <a-entity 
+                id="cursor" 
+                position="0 1.6 -1" 
+                rotation="0 0 0" 
+                color="red" 
+                geometry="primitive: box; width: .1; height: .1; depth: .001">
+            </a-entity>
+            <a-box 
+                visible="false"
+                position="-5 0 -1.2" 
+                color="#853EFF" 
+                class="collidable"
+                height="1.5"
+                width="4"
+                depth=".5"
+                raycaster-listener>
+            </a-box>
+            <a-box 
+                position="-3 5 2" 
+                color="#FFF" 
+                class="collidable"
+                height="2"
+                width="2.2"
+                depth=".5"
+                raycaster-listener>
+            </a-box>
+            <a-box 
+                position="3.75 5 -4" 
+                color="#E7AFAC" 
+                class="collidable"
+                height="1"
+                width="1.5"
+                depth=".5"
+                raycaster-listener>
+            </a-box>
+            <a-box class="collidable" position="0 0 0" visible="false" rotation="0 0 0" width="20" height=".1" depth="20" color="#7BC8A4"  raycaster-listener></a-box>
+            <a-sky radius="10" src="./img/casa1.jpg" ></a-sky>
+            <a-entity cursor="fuseTimeout: 1500" id="pointer" position="0 1.6 -1" raycaster="objects: .collidable; showLine: true"></a-entity>
+            <a-entity id="camera" camera look-controls position="0 1.6 0" rotation="0 90 0"></a-entity>
+        </a-scene>
+
+        
+        
+
+            
+        <script src="./components/index.js"></script>
+        <script type="module" src="./components/helper.js"></script>
+        
+        
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		
+        
+	</body>
+</html>
