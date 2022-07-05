@@ -1,11 +1,14 @@
 import {CurrentTarget, GetCurrentTarget, MapInterval} from "./helper.js"
 
+var cursorPrev
+
 AFRAME.registerComponent('raycaster-listener', {
     init: function () {
-
+        
         let data = this.data;
         let el = this.el;
         this.cornerValue = 0.1
+        cursorPrev = document.querySelector("#cursor-prev")
 
         this.el.addEventListener('raycaster-intersected', evt => {
             this.raycaster = evt.detail.el;
@@ -15,22 +18,17 @@ AFRAME.registerComponent('raycaster-listener', {
             this.raycaster = null;
             CurrentTarget(null);
         });
-
-        el.addEventListener("click", (evt) => {
-            
-            let normal = this.intersection.face.normal;
-            cursor.setAttribute("rotation", 90*normal.y + " " + 90*normal.x + " " + 90*normal.z)
-            console.log(this.intersection.point)
-        })
-
-        
-
     },
     tick: function () {
         
         if (!this.raycaster) { return }
-        
+
         let target = GetCurrentTarget()
+
+        // Tengo que hacer que haya una cola de targets
+        // para poder analizarlos y seleccionar el target
+        // que esté más cerca usando intersection.distance o algo así
+
         if(target == null && this.raycaster != null) {
             CurrentTarget(this.el);
             target = this.el
@@ -39,18 +37,24 @@ AFRAME.registerComponent('raycaster-listener', {
         else if(target != null) {
             this.intersection = this.raycaster.components.raycaster.getIntersection(target);
         }
-            
 
         if (!this.intersection) { return }
-        let normal = this.intersection.face.normal;
-        let distance = this.intersection.distance;
 
-        let edge = RotateOnCorners(target, this.intersection, this.cornerValue)
+        CursorManagment(this.intersection, target, this.cornerValue)
         
-        cursor.setAttribute("rotation", (90*normal.y + edge.y) + " " + (90*normal.x  + edge.x) + " " + (90*normal.z))
-        cursor.setAttribute("scale", 3/distance + " " + 3/distance + " " + 3/distance)
     }
 });
+
+
+function CursorManagment(intersection, target, cornerValue) {
+    let normal = intersection.face.normal;
+    let distance = intersection.distance;
+
+    let edge = RotateOnCorners(target, intersection, cornerValue)
+    let scale = 1.5/(1 + distance/2)
+    cursorPrev.setAttribute("rotation", (90*normal.y + edge.y) + " " + (90*normal.x  + edge.x) + " " + (90*normal.z))
+    cursorPrev.setAttribute("scale", scale + " " + scale + " " + scale)
+}
 
 function RotateOnCorners(target, intersection, cornerValue) {
     let rangeValue = 0.0000001;
@@ -174,6 +178,7 @@ function RotateOnCorners(target, intersection, cornerValue) {
     return edge
 }
 
+// Necesario para que se ejecute el init
 let query;
 if(query == null) {
     query = document.querySelectorAll(".collidable")

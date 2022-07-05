@@ -1,8 +1,8 @@
 
 
 let container, stats;
-let camera, scene, raycaster, renderer
-let cursor;
+let camera, scene, raycasterPrev, raycasterEdit, renderer
+let cursorPrev;
 let collides;
 let line;
 
@@ -21,6 +21,9 @@ let cosAlpha
 let senAlpha
 let previousRotation
 
+var structuresVisible = true
+var guizmosVisible = true
+
 
 const pointer = new THREE.Vector3();
 const radius = 100;
@@ -31,7 +34,8 @@ animate();
 
 function init() {
 
-    SaveInitialValues();
+    SaveInitialValues()
+    InitButtons()
 
     document.body.appendChild(container);
 
@@ -40,6 +44,7 @@ function init() {
 }
 
 function onPointerMove(event) {
+    magicNumber = innerHeight + (95*innerHeight/500)
 
     let rotationCameraYRad = cameraRotation.y / 180
     let rotationCameraXRad = cameraRotation.x / 180
@@ -67,22 +72,24 @@ function onPointerMove(event) {
     let fixedMovementMouseZForY = (heightRangeFromMinusOneToOne * magicNumberY) * senTheta * cosAlpha
     
     // Se necesita para compensar el tamaño del cursor
-    let fixSizeWidth = 1.1
-    let fixSizeHeight = 1.1
+    let fixSizeWidth = 1
+    let fixSizeHeight = 1
+
 
     pointer.x = (centerX + fixedMovementMouseX + fixedMovementMouseXForY) * fixSizeWidth
     pointer.y = (centerY - fixedMovementMouseY) * fixSizeHeight  + 1.6 
     pointer.z = (centerZ - fixedMovementMouseZForX - fixedMovementMouseZForY) * fixSizeWidth
 
-    cursor.setAttribute("rotation", camera.getAttribute("rotation").x + " " + camera.getAttribute("rotation").y + + " " + camera.getAttribute("rotation").z)
+    cursorPrev.setAttribute("rotation", camera.getAttribute("rotation").x + " " + camera.getAttribute("rotation").y + + " " + camera.getAttribute("rotation").z)
 
 }
 
 function SaveInitialValues() {
 
     container = document.createElement('scene');
-    raycaster = document.querySelector("#pointer")
-    cursor = document.querySelector("#cursor")
+    raycasterPrev = document.querySelector("#cursor-prev-raycast")
+    raycasterEdit = document.querySelector("#cursor-edit")
+    cursorPrev = document.querySelector("#cursor-prev")
     camera = document.querySelector("#camera")
     collides = document.querySelectorAll(".collidable")
     line = document.querySelector("#line")
@@ -90,9 +97,10 @@ function SaveInitialValues() {
 
     OnResize()
 
-    // Número necesario para que ande bien con 0.001 de profundidad
-    // se cambia si se cambia la profundidad
-    magicNumber = 690
+    // número que me saqué de la galera para que ande bien cuando
+    // hay resize de altura
+    magicNumber = innerHeight + (95*innerHeight/500)
+
     piRad = Math.PI
 }
 
@@ -109,9 +117,142 @@ function animate() {
 
 function render() {
 
-    cursor.setAttribute("position", pointer.x + " " + pointer.y + " " + pointer.z)
-    raycaster.setAttribute("position", pointer)
-    raycaster.setAttribute("raycaster", "direction", pointer.x + " " + (pointer.y - 1.6) + " " + pointer.z)
+    cursorPrev.setAttribute("position", pointer.x + " " + pointer.y + " " + pointer.z)
+    raycasterPrev.setAttribute("position", pointer)
+    raycasterPrev.setAttribute("raycaster", "direction", pointer.x + " " + (pointer.y - 1.6) + " " + pointer.z)
 
 }
 
+
+function InitButtons() {
+
+    let buttonToggleEditor = document.querySelector(".toggleEditor")
+    let buttonToggleStructures = document.querySelector(".toggleStructure")
+    let buttonToggleGuizmos = document.querySelector(".toggleGuizmos")
+
+    buttonToggleEditor.addEventListener("click", ToggleEditor)
+    buttonToggleStructures.addEventListener("click", ToggleStructure)
+    buttonToggleGuizmos.addEventListener("click", ToggleGuizmos)
+}
+
+function ToggleEditor() {
+    
+    let raycasterPrevObjects = raycasterPrev.getAttribute("raycaster").objects
+
+    let raycasterPrevObjectsIsNull = (raycasterPrevObjects === 'none')
+    if(raycasterPrevObjectsIsNull) {
+        cursorPrev.setAttribute("visible", "true")
+        raycasterPrev.setAttribute("raycaster", "objects", ".collidable")
+
+        raycasterEdit.setAttribute("visible", "false")
+        raycasterEdit.setAttribute("raycaster", "objects", "none")
+
+        SetEditorButtons(false)
+        HideAllEditorsTools()
+    } else {
+        cursorPrev.setAttribute("visible", "false")
+        raycasterPrev.setAttribute("raycaster", "objects", "none")
+
+        raycasterEdit.setAttribute("visible", "true")
+        raycasterEdit.setAttribute("raycaster", "objects", ".structureTarget")
+
+        SetEditorButtons(true)
+        ShowAllEditorActiveTools()
+    }
+}
+
+function SetEditorButtons(setVisible) {
+    let buttons = document.querySelectorAll(".editorButton")
+    if(setVisible) {
+        buttons.forEach(button => {
+            button.style.visibility='visible'
+        });
+    } else {
+        buttons.forEach(button => {
+            button.style.visibility='hidden'
+        });
+    }
+    
+}
+
+function ToggleStructure(evt, hide = false, show = false) {
+    let button = document.querySelector(".toggleStructure")
+    let text = button.firstChild
+    
+    let queue = document.querySelectorAll(".structure")
+    console.log(hide + " " + show)
+    if(hide) {
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "false")
+        });
+        return
+    }
+    if(show && structuresVisible) {
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "true")
+        });
+        return
+    }
+
+    if(text.data == "Mostrar estructuras") {
+        text.data = "Ocultar estructuras"
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "true")
+        });
+        structuresVisible = true
+    } 
+    else {
+        text.data = "Mostrar estructuras"
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "false")
+        });
+        structuresVisible = false
+    }
+}
+
+function ToggleGuizmos(evt, hide = false, show = false) {
+    let button = document.querySelector(".toggleGuizmos")
+
+    let text = button.firstChild
+    let queue = document.querySelectorAll(".guizmos")
+
+    if(hide) {
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "false")
+        });
+        return
+    }
+    if(show && guizmosVisible) {
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "true")
+        });
+        return
+    }
+
+    if(text.data == "Mostrar guizmos") {
+        text.data = "Ocultar guizmos"
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "true")
+        });
+        guizmosVisible = true
+    } 
+    else 
+    {
+        text.data = "Mostrar guizmos"
+        queue.forEach(structure => {
+            structure.setAttribute("visible", "false")
+        });
+        guizmosVisible = false
+    }
+}
+
+function HideAllEditorsTools() {
+    ToggleGuizmos(null, true, false)
+    ToggleStructure(null, true, false)
+}
+function ShowAllEditorActiveTools() {
+    if(guizmosVisible)
+        ToggleGuizmos(null, false, true)
+    if(structuresVisible)
+        ToggleStructure(null, false, true)
+}
