@@ -1,4 +1,4 @@
-import {CurrentTarget, GetCurrentTarget, MapInterval} from "./helper.js"
+import {RemoveTarget, AddTarget, GetCurrentTarget, MapInterval} from "./helper.js"
 
 var cursorPrev
 
@@ -12,11 +12,11 @@ AFRAME.registerComponent('raycaster-listener', {
 
         this.el.addEventListener('raycaster-intersected', evt => {
             this.raycaster = evt.detail.el;
-            CurrentTarget(this.el);
+            AddTarget(this.el);
         });
         this.el.addEventListener('raycaster-intersected-cleared', evt => {
             this.raycaster = null;
-            CurrentTarget(null);
+            RemoveTarget(this.el);
         });
     },
     tick: function () {
@@ -25,12 +25,8 @@ AFRAME.registerComponent('raycaster-listener', {
 
         let target = GetCurrentTarget()
 
-        // Tengo que hacer que haya una cola de targets
-        // para poder analizarlos y seleccionar el target
-        // que esté más cerca usando intersection.distance o algo así
-
         if(target == null && this.raycaster != null) {
-            CurrentTarget(this.el);
+            AddTarget(this.el);
             target = this.el
         }
             
@@ -49,9 +45,19 @@ AFRAME.registerComponent('raycaster-listener', {
 function CursorManagment(intersection, target, cornerValue) {
     let normal = intersection.face.normal;
     let distance = intersection.distance;
-
-    let edge = RotateOnCorners(target, intersection, cornerValue)
+    let cornersToRotate = target.getAttribute("rotate-corner")
     let scale = 1.5/(1 + distance/2)
+    let edge
+    
+    if(cornersToRotate == "") {
+        edge = new THREE.Vector3(0,0,0);
+    } else {
+         // Hacer para revise qué bordes son los que generan el efectot de movimiento
+         // Necesito también hacer una cola de objectos en el raycast
+         // Para que cuando uno deje de ser enfocado se enfoque el siguiente
+        edge = RotateOnCorners(target, intersection, cornerValue)
+    }
+
     cursorPrev.setAttribute("rotation", (90*normal.y + edge.y) + " " + (90*normal.x  + edge.x) + " " + (90*normal.z))
     cursorPrev.setAttribute("scale", scale + " " + scale + " " + scale)
 }

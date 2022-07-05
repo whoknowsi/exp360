@@ -135,10 +135,10 @@ function InitButtons() {
     buttonToggleGuizmos.addEventListener("click", ToggleGuizmos)
 }
 
-function ToggleEditor() {
+function ToggleEditor(evt) {
     
     let raycasterPrevObjects = raycasterPrev.getAttribute("raycaster").objects
-
+    let text = evt.target.firstChild;
     let raycasterPrevObjectsIsNull = (raycasterPrevObjects === 'none')
     if(raycasterPrevObjectsIsNull) {
         cursorPrev.setAttribute("visible", "true")
@@ -146,7 +146,7 @@ function ToggleEditor() {
 
         raycasterEdit.setAttribute("visible", "false")
         raycasterEdit.setAttribute("raycaster", "objects", "none")
-
+        text.data = "Editar"
         SetEditorButtons(false)
         HideAllEditorsTools()
     } else {
@@ -156,6 +156,7 @@ function ToggleEditor() {
         raycasterEdit.setAttribute("visible", "true")
         raycasterEdit.setAttribute("raycaster", "objects", ".structureTarget")
 
+        text.data = "Previsualizar"
         SetEditorButtons(true)
         ShowAllEditorActiveTools()
     }
@@ -180,7 +181,7 @@ function ToggleStructure(evt, hide = false, show = false) {
     let text = button.firstChild
     
     let queue = document.querySelectorAll(".structure")
-    console.log(hide + " " + show)
+    
     if(hide) {
         queue.forEach(structure => {
             structure.setAttribute("visible", "false")

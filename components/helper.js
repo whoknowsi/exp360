@@ -1,14 +1,32 @@
-var currentTarget;
+var targetsInPool = [];
 
-export function CurrentTarget(target) {
-    if(target != null)
-        currentTarget = target;
-    else
-        currentTarget = null;
+export function AddTarget(target) {
+    targetsInPool.push(target)
+}
+
+export function RemoveTarget(target) {
+    var filtered = targetsInPool.filter( _target => _target != target);
+    targetsInPool = filtered
 }
 
 export function GetCurrentTarget() {
-    return currentTarget
+    let raycasterEl = document.querySelector("#cursor-prev-raycast")
+    let raycaster = raycasterEl.components.raycaster
+    let intersection
+    let previousDistance = 100000000
+    let closestTarget
+
+    targetsInPool.forEach(target => {
+        intersection = raycaster.getIntersection(target);
+        if(intersection.distance < previousDistance) {
+            previousDistance = intersection.distance
+            closestTarget = target
+            console.log(target)
+        }
+    });
+    
+
+    return closestTarget
 }
 
 export function MapInterval(val, srcMin, srcMax, dstMin, dstMax)
@@ -66,11 +84,19 @@ export function CreateFloor(point1, point2, point1Degree, point2Degree) {
 
     let vectorDirection = { x: xlast - xfirst, z: zlast - zfirst}
 
-
     let newFloor = document.createElement("a-box")
     newFloor.setAttribute("width",  Math.abs(vectorDirection.x))
     newFloor.setAttribute("height", .1)
     newFloor.setAttribute("depth", Math.abs(vectorDirection.z))
+
+    newFloor.setAttribute("position", x + " " + 0.01 + " " + z) 
+    newFloor.setAttribute("opacity", ".3")
+    newFloor.setAttribute("class", "collidable structure")
+    newFloor.setAttribute("raycaster-listener", "")
+    newFloor.setAttribute("depth", Math.abs(vectorDirection.z))
+    newFloor.setAttribute("rotate-corner", "")
+
+    document.querySelector("#scene").appendChild(newFloor)
 
     // Guizmos, sirven para ver los puntos de interés de la figura
     // la diagonal, punto inicial, punto final, linea de trazo, etc
@@ -78,12 +104,6 @@ export function CreateFloor(point1, point2, point1Degree, point2Degree) {
 
     //CreateGuizmos(x, z, xfirst, zfirst, xlast, zlast)
 
-    newFloor.setAttribute("position", x + " " + 0.01 + " " + z) 
-    newFloor.setAttribute("opacity", ".3")
-    newFloor.setAttribute("class", "collidable structure")
-    newFloor.setAttribute("raycaster-listener", "")
-
-    document.querySelector("#scene").appendChild(newFloor)
 }
 
 function CreateGuizmos(x, z, xfirst, zfirst, xlast, zlast) {

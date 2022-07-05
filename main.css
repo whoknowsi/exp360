@@ -6,7 +6,7 @@
 .buttonBuilds {
     position: absolute;
     left: 1vh;
-    top: 1vh;
+    bottom: 2vh;
 }
 
 .editorButton {
