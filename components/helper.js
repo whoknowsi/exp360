@@ -153,7 +153,7 @@ export function SetBase(originPoint, distance1, degree1) {
     sphere.setAttribute("id", "dragginSphere")
     sphere.setAttribute("radius", ".05")
     sphere.setAttribute("color", "green")
-    sphere.setAttribute("position", _originPoint.x + " " + 0.01 + " " + _originPoint.z) 
+    sphere.setAttribute("position", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z) 
 
     let line = document.createElement("a-entity")
     line.setAttribute("id", "dragginLine")
