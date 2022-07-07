@@ -20,6 +20,7 @@ let senTheta
 let cosAlpha
 let senAlpha
 let previousRotation
+let cameraHeight = 1.5
 
 var structuresVisible = true
 var gizmosVisible = true
@@ -77,7 +78,7 @@ function onPointerMove(event) {
 
 
     pointer.x = (centerX + fixedMovementMouseX + fixedMovementMouseXForY) * fixSizeWidth
-    pointer.y = (centerY - fixedMovementMouseY) * fixSizeHeight  + 1.6 
+    pointer.y = (centerY - fixedMovementMouseY) * fixSizeHeight  + cameraHeight
     pointer.z = (centerZ - fixedMovementMouseZForX - fixedMovementMouseZForY) * fixSizeWidth
 
     cursorPrev.setAttribute("rotation", camera.getAttribute("rotation").x + " " + camera.getAttribute("rotation").y + + " " + camera.getAttribute("rotation").z)
@@ -85,6 +86,7 @@ function onPointerMove(event) {
 }
 
 function SaveInitialValues() {
+    let position = 0 + " " + cameraHeight + " " + 0
 
     container = document.createElement('scene');
     raycasterPrev = document.querySelector("#cursor-prev-raycast")
@@ -93,8 +95,12 @@ function SaveInitialValues() {
     camera = document.querySelector("#camera")
     collides = document.querySelectorAll(".collidable")
     line = document.querySelector("#line")
-    cameraRotation = camera.getAttribute("rotation");
+    cameraRotation = camera.getAttribute("rotation")
 
+    cursorPrev.setAttribute("position", position)
+    raycasterPrev.setAttribute("position", position)
+    camera.setAttribute("position", position)
+    
     OnResize()
 
     // número que me saqué de la galera para que ande bien cuando
@@ -116,9 +122,8 @@ function animate() {
 }
 
 function render() {
-
     cursorPrev.setAttribute("position", pointer.x + " " + pointer.y + " " + pointer.z)
-    raycasterPrev.setAttribute("raycaster", "direction", pointer.x + " " + (pointer.y - 1.6) + " " + pointer.z)
+    raycasterPrev.setAttribute("raycaster", "direction", pointer.x + " " + (pointer.y - cameraHeight) + " " + pointer.z)
 }
 
 

@@ -14,6 +14,8 @@
                 <img id="cursor-img" src="./img/cursor.png">
                 <img id="iglesia1" src="./img/Iglesia1.jpg">
                 <img id="iglesia2" src="./img/Iglesia2.jpg">
+                <img id="iglesia3" src="./img/Iglesia3.jpg">
+                <img id="iglesia4" src="./img/Iglesia4.jpg">
             </a-assets>
             
             <!-- Cursor independiente de la cámara (Para modo previsualización) -->
@@ -112,8 +114,8 @@
             </a-box>
 
             <a-box 
-                class="skyChanger" 
-                position="-1.546 0.068 0.052" 
+                class="skyChanger current" 
+                position="0 0 0" 
                 width="1.029" 
                 height="0.036" 
                 depth="0.944" 
@@ -124,12 +126,32 @@
 
             <a-box 
                 class="skyChanger" 
-                position="1.546 0.068 0.052" 
+                position="2.33 0 0" 
                 width="1.029" 
                 height="0.036" 
                 depth="0.944" 
                 color="#7BC8A4"  
                 change-sky="target: #iglesia2; position: 2.276 0 0"
+                material= "opacity: 0.5; alphaTest: .5">
+            </a-box>
+            <a-box 
+                class="skyChanger" 
+                position="-2.567 0 .091" 
+                width="1.029" 
+                height="0.036" 
+                depth="0.944" 
+                color="#7BC8A4"  
+                change-sky="target: #iglesia3; position: -2.276 0 0"
+                material= "opacity: 0.5; alphaTest: .5">
+            </a-box>
+            <a-box 
+                class="skyChanger" 
+                position="-4.881 0 .126" 
+                width="1.029" 
+                height="0.036" 
+                depth="0.944" 
+                color="#7BC8A4"  
+                change-sky="target: #iglesia4; position: -2.276 0 0"
                 material= "opacity: 0.5; alphaTest: .5">
             </a-box>
 
