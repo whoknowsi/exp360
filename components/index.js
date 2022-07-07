@@ -140,7 +140,7 @@ function ToggleEditor(evt) {
     let raycasterPrevObjectsIsNull = (raycasterPrevObjects === 'none')
     if(raycasterPrevObjectsIsNull) {
         cursorPrev.setAttribute("visible", "true")
-        raycasterPrev.setAttribute("raycaster", "objects", ".collidable")
+        raycasterPrev.setAttribute("raycaster", "objects", ".collidable, .skyChanger")
 
         raycasterEdit.setAttribute("visible", "false")
         raycasterEdit.setAttribute("raycaster", "objects", "none")
