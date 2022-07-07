@@ -22,7 +22,7 @@ let senAlpha
 let previousRotation
 
 var structuresVisible = true
-var guizmosVisible = true
+var gizmosVisible = true
 
 
 const pointer = new THREE.Vector3();
@@ -128,11 +128,11 @@ function InitButtons() {
 
     let buttonToggleEditor = document.querySelector(".toggleEditor")
     let buttonToggleStructures = document.querySelector(".toggleStructure")
-    let buttonToggleGuizmos = document.querySelector(".toggleGuizmos")
+    let buttonToggleGizmos = document.querySelector(".toggleGizmos")
 
     buttonToggleEditor.addEventListener("click", ToggleEditor)
     buttonToggleStructures.addEventListener("click", ToggleStructure)
-    buttonToggleGuizmos.addEventListener("click", ToggleGuizmos)
+    buttonToggleGizmos.addEventListener("click", ToggleGizmos)
 }
 
 function ToggleEditor(evt) {
@@ -211,11 +211,11 @@ function ToggleStructure(evt, hide = false, show = false) {
     }
 }
 
-function ToggleGuizmos(evt, hide = false, show = false) {
-    let button = document.querySelector(".toggleGuizmos")
+function ToggleGizmos(evt, hide = false, show = false) {
+    let button = document.querySelector(".toggleGizmos")
 
     let text = button.firstChild
-    let queue = document.querySelectorAll(".guizmos")
+    let queue = document.querySelectorAll(".gizmo")
 
     if(hide) {
         queue.forEach(structure => {
@@ -223,37 +223,37 @@ function ToggleGuizmos(evt, hide = false, show = false) {
         });
         return
     }
-    if(show && guizmosVisible) {
+    if(show && gizmosVisible) {
         queue.forEach(structure => {
             structure.setAttribute("visible", "true")
         });
         return
     }
 
-    if(text.data == "Mostrar guizmos") {
-        text.data = "Ocultar guizmos"
+    if(text.data == "Mostrar gizmos") {
+        text.data = "Ocultar gizmos"
         queue.forEach(structure => {
             structure.setAttribute("visible", "true")
         });
-        guizmosVisible = true
+        gizmosVisible = true
     } 
     else 
     {
-        text.data = "Mostrar guizmos"
+        text.data = "Mostrar gizmos"
         queue.forEach(structure => {
             structure.setAttribute("visible", "false")
         });
-        guizmosVisible = false
+        gizmosVisible = false
     }
 }
 
 function HideAllEditorsTools() {
-    ToggleGuizmos(null, true, false)
+    ToggleGizmos(null, true, false)
     ToggleStructure(null, true, false)
 }
 function ShowAllEditorActiveTools() {
-    if(guizmosVisible)
-        ToggleGuizmos(null, false, true)
+    if(gizmosVisible)
+        ToggleGizmos(null, false, true)
     if(structuresVisible)
         ToggleStructure(null, false, true)
 }

@@ -1,12 +1,12 @@
-var targetsInPool = [];
+var _targetsInPool = [];
 
 export function AddTarget(target) {
-    targetsInPool.push(target)
+    _targetsInPool.push(target)
 }
 
 export function RemoveTarget(target) {
-    var filtered = targetsInPool.filter( _target => _target != target);
-    targetsInPool = filtered
+    var filtered = _targetsInPool.filter( _target => _target != target);
+    _targetsInPool = filtered
 }
 
 export function GetCurrentTarget() {
@@ -16,12 +16,12 @@ export function GetCurrentTarget() {
     let previousDistance = 100000000
     let closestTarget
 
-    targetsInPool.forEach(target => {
+    _targetsInPool.forEach(target => {
         intersection = raycaster.getIntersection(target);
+        if(intersection == null) return 
         if(intersection.distance < previousDistance) {
             previousDistance = intersection.distance
             closestTarget = target
-            console.log(target)
         }
     });
     
@@ -36,30 +36,63 @@ export function MapInterval(val, srcMin, srcMax, dstMin, dstMax)
     return dstMin + (val - srcMin) / (srcMax - srcMin) * (dstMax - dstMin);
 }
 
-export function CreateFloor(point1, point2, point1Degree, point2Degree) {
 
+////////////////////////// PASAR A OTRO HELPER BUILD ////////////////////////////////
+
+var _originPoint, _distance1, _distance2, _degree1, _degree2
+var _camera = document.querySelector("#camera")
+var _cameraRotation = _camera.getAttribute("rotation")
+var _scene = document.querySelector("#scene")
+
+export function CreateCube() {
+
+    RemoveGuideLinesCube()
+
+    let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
+    let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree2.vertical
+    let height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance2
+    let middlePoint = CalculateMiddlePointOfDiagonal(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
+    let size = CalculateSize(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
+
+    console.log(size)
+
+    let newCube = document.createElement("a-box")
+    newCube.setAttribute("width",  Math.abs(size.x))
+    newCube.setAttribute("depth", Math.abs(size.z))
+    if(height > 0)
+        newCube.setAttribute("height", height)
+    else
+        newCube.setAttribute("height", -height)
+    newCube.setAttribute("position", middlePoint.x + " " + (height/2+_originPoint.y) + " " + middlePoint.z) 
+    newCube.setAttribute("opacity", ".3")
+    newCube.setAttribute("class", "collidable structure")
+    newCube.setAttribute("raycaster-listener", "")
+    newCube.setAttribute("rotate-corner", "all")
+
+    _scene.appendChild(newCube)
+
+}
+
+function RemoveGuideLinesCube() {
     let dragginLine = document.querySelector("#dragginLine")
     dragginLine.remove()
-    let startLine1 = document.querySelector("#startLine1")
-    startLine1.removeAttribute("id")
-    let startLine2 = document.querySelector("#startLine2")
-    startLine2.removeAttribute("id")
-    let endLine1 = document.querySelector("#endLine1")
-    endLine1.removeAttribute("id")
-    let endLine2 = document.querySelector("#endLine2")
-    endLine2.removeAttribute("id")
-    let dragginSphere = document.querySelector("#dragginSphere")
-    dragginSphere.remove()
 
+    let temporalGizmos = document.querySelectorAll(".temporalGizmo")
+    temporalGizmos.forEach(temporalGizmo => {
+        temporalGizmo.removeAttribute("class", "temporalGizmo")
+        temporalGizmo.setAttribute("class", "gizmo")
+    })
+}
 
-    let angleBetweenDotsFromCamera = Math.abs(point2Degree - point1Degree);
+function CalculateMiddlePointOfDiagonal(distance1, distance2, degree1, degree2) {
+    let angleBetweenDotsFromCamera = Math.abs(degree2 - degree1);
 
-    let shorterSide = point2
-    let longerSide = point1
+    let shorterSide = distance2
+    let longerSide = distance1
 
-    if(point2 >= point1) {
-        shorterSide = point1
-        longerSide = point2
+    if(distance2 >= distance1) {
+        shorterSide = distance1
+        longerSide = distance2
     }
 
     let op = Math.sin(angleBetweenDotsFromCamera) * shorterSide
@@ -71,71 +104,24 @@ export function CreateFloor(point1, point2, point1Degree, point2Degree) {
     let distanceToCenter = Math.sqrt(longerSide*longerSide + halfDiagonal*halfDiagonal - 2 * longerSide * halfDiagonal * Math.cos(delta))
 
     let angle = Math.asin((Math.sin(delta)*halfDiagonal)/distanceToCenter)
-    angle = MoveFigureToCorrectAngle(angle, point1, point2, point1Degree, point2Degree)
+    angle = MoveFigureToCorrectAngle(angle, distance1, distance2, degree1, degree2)
 
-    let x = -distanceToCenter * Math.sin(angle)
-    let z = -distanceToCenter * Math.cos(angle)
-
-    let xfirst = -point1 * Math.sin(point1Degree)
-    let zfirst = -point1 * Math.cos(point1Degree)
-
-    let xlast = -point2 * Math.sin(point2Degree)
-    let zlast = -point2 * Math.cos(point2Degree)
-
-    let vectorDirection = { x: xlast - xfirst, z: zlast - zfirst}
-
-    let newFloor = document.createElement("a-box")
-    newFloor.setAttribute("width",  Math.abs(vectorDirection.x))
-    newFloor.setAttribute("height", .1)
-    newFloor.setAttribute("depth", Math.abs(vectorDirection.z))
-
-    newFloor.setAttribute("position", x + " " + 0.01 + " " + z) 
-    newFloor.setAttribute("opacity", ".3")
-    newFloor.setAttribute("class", "collidable structure")
-    newFloor.setAttribute("raycaster-listener", "")
-    newFloor.setAttribute("depth", Math.abs(vectorDirection.z))
-    newFloor.setAttribute("rotate-corner", "")
-
-    document.querySelector("#scene").appendChild(newFloor)
-
-    // Guizmos, sirven para ver los puntos de interés de la figura
-    // la diagonal, punto inicial, punto final, linea de trazo, etc
-    // descomentar si se ve necesario
-
-    //CreateGuizmos(x, z, xfirst, zfirst, xlast, zlast)
-
+    return { 
+        x: -distanceToCenter * Math.sin(angle),
+        z: -distanceToCenter * Math.cos(angle)
+    }
 }
 
-function CreateGuizmos(x, z, xfirst, zfirst, xlast, zlast) {
-    let point1Sphere = document.createElement("a-sphere")
-    point1Sphere.setAttribute("radius", ".05")
-    point1Sphere.setAttribute("color", "red")
-    point1Sphere.setAttribute("position", x + " " + 0.01 + " " + z) 
-    point1Sphere.setAttribute("class", "guizmos")
+function CalculateSize(distance1, distance2, degree1, degree2) {
+    let xfirst = -distance1 * Math.sin(degree1)
+    let zfirst = -distance1 * Math.cos(degree1)
 
-    let point2Sphere = document.createElement("a-sphere")
-    point2Sphere.setAttribute("radius", ".05")
-    point2Sphere.setAttribute("color", "black")
-    point2Sphere.setAttribute("position", xlast + " " + 0.01 + " " + zlast) 
-    point2Sphere.setAttribute("class", "guizmos")
-
-    let middlePointSphere = document.createElement("a-sphere")
-    middlePointSphere.setAttribute("radius", ".05")
-    middlePointSphere.setAttribute("color", "green")
-    middlePointSphere.setAttribute("position", xfirst + " " + 0.01 + " " + zfirst)
-    middlePointSphere.setAttribute("class", "guizmos") 
-
-    let diagonalLine = document.createElement("a-entity")
-    diagonalLine.setAttribute("line", "start", point2Sphere.object3D.position)
-    diagonalLine.setAttribute("line", "end", middlePointSphere.object3D.position)
-    diagonalLine.setAttribute("line", "color", "blue")
-    diagonalLine.setAttribute("class", "guizmos")
-
-    let scene = document.querySelector("#scene")
-    scene.appendChild(point1Sphere)
-    scene.appendChild(middlePointSphere)
-    scene.appendChild(point2Sphere)
-    scene.appendChild(diagonalLine)
+    let xlast = -distance2 * Math.sin(degree2)
+    let zlast = -distance2 * Math.cos(degree2)
+    return { 
+        x: xlast - xfirst, 
+        z: zlast - zfirst
+    }
 }
 
 function MoveFigureToCorrectAngle(angle, firstPoint, lastPoint, firstPointDegree, lastPointDegree) {
@@ -159,129 +145,206 @@ function MoveFigureToCorrectAngle(angle, firstPoint, lastPoint, firstPointDegree
     return angle
 }
 
-export function CreateFirstPoint(lastEventTarget) {
+export function SetBase(originPoint, distance1, degree1) {
 
-    let x = lastEventTarget.detail.intersection.point.x
-    let z = lastEventTarget.detail.intersection.point.z
+    _originPoint = originPoint
+    _distance1 = distance1
+    _degree1 = degree1
+
     let sphere = document.createElement("a-sphere")
     sphere.setAttribute("id", "dragginSphere")
     sphere.setAttribute("radius", ".05")
     sphere.setAttribute("color", "green")
-    sphere.setAttribute("position", x + " " + 0.01 + " " + z) 
+    sphere.setAttribute("position", _originPoint.x + " " + 0.01 + " " + _originPoint.z) 
 
     let line = document.createElement("a-entity")
     line.setAttribute("id", "dragginLine")
     line.setAttribute("line", "start", sphere.object3D.position)
     line.setAttribute("line", "end", "")
     line.setAttribute("line", "color", "blue")
+    line.setAttribute("line-draggin-floor", "")
 
-    let camera = document.querySelector("#camera")
-    let originDegree = NormalizeAngleInRadians(camera.getAttribute("rotation").y)
-    let cameraRotationVertical = NormalizeAngleInRadians(camera.getAttribute("rotation").x)
-    let origin = Math.abs(lastEventTarget.detail.intersection.distance * Math.sin((Math.PI / 2) - cameraRotationVertical))
-
-    line.setAttribute("line-draggin", 
-                        "targetClass: " + lastEventTarget.target.getAttribute("class") + 
-                        "; originDegree: " + originDegree + 
-                        "; origin: " + origin)
-    // lastEventTarget.target.addEventListener("mouseup", StopMovingLine)
-
-    document.querySelector("#scene").appendChild(sphere)
-    document.querySelector("#scene").appendChild(line)
+    _scene.appendChild(sphere)
+    _scene.appendChild(line)
 }
 
-
-AFRAME.registerComponent('line-draggin', {
-    schema: {        
-        targetClass: {
-            type: "string"
-        },
-        originDegree: {
-            type: "float"
-        },
-        origin: {
-            type: "float"
-        }
-    },
+AFRAME.registerComponent('line-draggin-floor', {
     tick: function () {
-        let target = document.querySelector("." + this.data.targetClass)
+        let targets = document.querySelectorAll(".structureTarget")
         let raycaster = document.querySelector("#cursor-edit").components.raycaster
-        let intersection = raycaster.getIntersection(target)
+        let intersection
+        let _target
+        targets.forEach(target => {
+            if(intersection == null) {
+                intersection = raycaster.getIntersection(target) 
+                _target = target
+            }
+                
+        });
+    
+        this.el.setAttribute("line", "start",  _originPoint)
         this.el.setAttribute("line", "end", intersection.point)
-        let originPoint = this.el.getAttribute("line").start
+        let cameraRotationHorizontal = NormalizeAngleInRadians(_cameraRotation.y)
+        let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
+        let distance2 = Math.abs(intersection.distance * Math.sin((Math.PI / 2) - cameraRotationVertical))
 
+        let size = CalculateSize(_distance1, distance2, _degree1.horizontal, cameraRotationHorizontal)
 
-        let camera = document.querySelector("#camera")
-
-        let cameraRotationHorizontal = NormalizeAngleInRadians(camera.getAttribute("rotation").y)
-        let cameraRotationVertical = NormalizeAngleInRadians(camera.getAttribute("rotation").x)
-
-        let point1 = this.data.origin
-        let point2 = Math.abs(intersection.distance * Math.sin((Math.PI / 2) - cameraRotationVertical))
-        let point1Degree = this.data.originDegree
-
-        let xfirst = -point1 * Math.sin(point1Degree)
-        let zfirst = -point1 * Math.cos(point1Degree)
-
-
-    
-        let xlast = -point2 * Math.sin(cameraRotationHorizontal)
-        let zlast = -point2 * Math.cos(cameraRotationHorizontal)
-    
-        let vectorDirection = { x: xlast - xfirst, z: zlast - zfirst}
-    
-        let startLine1 = document.querySelector("#startLine1")
-        if(!startLine1) {
-            let line = document.createElement("a-entity")
-            line.setAttribute("id", "startLine1")
-            line.setAttribute("line", "start", originPoint)
-            line.setAttribute("line", "color", "green")
-            line.setAttribute("class", "guizmos")
-            document.querySelector("#scene").appendChild(line)
-        } else {
-            startLine1.setAttribute("line", "end", (originPoint.x + vectorDirection.x) + " " + 0.01 + " " + originPoint.z)
-        }
-
-        let startLine2 = document.querySelector("#startLine2")
-        if(!startLine2) {
-            let line = document.createElement("a-entity")
-            line.setAttribute("id", "startLine2")
-            line.setAttribute("line", "start", originPoint)
-            line.setAttribute("line", "color", "green")
-            line.setAttribute("class", "guizmos")
-            document.querySelector("#scene").appendChild(line)
-        } else {
-            startLine2.setAttribute("line", "end", originPoint.x + " " + 0.01 + " " + (vectorDirection.z + originPoint.z))
-        }
-
-        let endLine1 = document.querySelector("#endLine1")
-        if(!endLine1) {
-            let line = document.createElement("a-entity")
-            line.setAttribute("id", "endLine1")
-            line.setAttribute("line", "start", intersection.point)
-            line.setAttribute("line", "color", "green")
-            line.setAttribute("class", "guizmos")
-            document.querySelector("#scene").appendChild(line)
-        } else {
-            endLine1.setAttribute("line", "start", intersection.point)
-            endLine1.setAttribute("line", "end", originPoint.x + " " + 0.01 + " " + (vectorDirection.z + originPoint.z))
-        }
-
-        let endLine2 = document.querySelector("#endLine2")
-        if(!endLine2) {
-            let line = document.createElement("a-entity")
-            line.setAttribute("id", "endLine2")
-            line.setAttribute("line", "start", intersection.point)
-            line.setAttribute("line", "color", "green")
-            line.setAttribute("class", "guizmos")
-            document.querySelector("#scene").appendChild(line)
-        } else {
-            endLine2.setAttribute("line", "start", intersection.point)
-            endLine2.setAttribute("line", "end", (originPoint.x + vectorDirection.x) + " " + 0.01 + " " + originPoint.z)
-        }
+        CreateOrModifyBaseGuideLine(_originPoint, (_originPoint.x + size.x), "startLineX", "x")
+        CreateOrModifyBaseGuideLine(_originPoint, (_originPoint.z + size.z), "startLineZ", "z")
+        CreateOrModifyBaseGuideLine(intersection.point, _originPoint.x, "endLineX", "x")
+        CreateOrModifyBaseGuideLine(intersection.point, _originPoint.z, "endLineZ", "z")
         
     }
 });
+
+
+export function SetVolume(distance2, degree2) {
+    
+    distance2 != null && (_distance2 = distance2)
+    degree2 !=  null && (_degree2 = degree2)
+
+    let dragginLine = document.querySelector("#dragginLine")
+    dragginLine != null && dragginLine.remove()
+    let dragginSphere = document.querySelector("#dragginSphere")
+    dragginSphere != null && dragginSphere.remove()
+    
+    let line = document.createElement("a-entity")
+    line.setAttribute("id", "dragginLine")
+    line.setAttribute("line", "start", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z)
+    line.setAttribute("line", "end", "")
+    line.setAttribute("line", "color", "blue")
+    line.setAttribute("line-draggin-cube", "")
+
+    _scene.appendChild(line)
+}
+
+AFRAME.registerComponent('line-draggin-cube', {
+    tick: function () {
+        let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
+        let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree2.vertical
+
+        let height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance2
+        let targetPoint = new THREE.Vector3(_originPoint.x, _originPoint.y + height, _originPoint.z)
+        this.el.setAttribute("line", "end", targetPoint)
+
+        let baseLine1
+        let baseLine2
+
+        let lines = document.querySelectorAll(".temporalGizmo")
+        lines.forEach(line => {
+            if(line.getAttribute("id") == "startLineX") 
+                baseLine1 = line.getAttribute("line")
+            else if(line.getAttribute("id") == "endLineX")
+                baseLine2 = line.getAttribute("line")
+        })
+    
+        if(baseLine1 != null && baseLine2) {
+            let newOriginStart = new THREE.Vector3(baseLine1.start.x, baseLine1.start.y + height, baseLine1.start.z)
+            let newOriginEnd = new THREE.Vector3(baseLine2.start.x, baseLine2.start.y + height, baseLine2.start.z)
+    
+            CreateOrModifyCubeGuideLine(newOriginStart, baseLine2.end, "startLineUpX")
+            CreateOrModifyCubeGuideLine(newOriginStart, baseLine1.end, "startLineUpZ")
+            CreateOrModifyCubeGuideLine(newOriginEnd, baseLine1.end, "endLineUpZ")
+            CreateOrModifyCubeGuideLine(newOriginEnd, baseLine2.end, "endLineUpX")
+        }
+        }
+    });
+
+
+export function SetOffset(distance2, degree2) {
+    
+    _distance2 = distance2
+    _degree2 = degree2
+
+    let dragginLine = document.querySelector("#dragginLine")
+    dragginLine != null && dragginLine.remove()
+    let dragginSphere = document.querySelector("#dragginSphere")
+    dragginSphere != null && dragginSphere.remove()
+
+    let line = document.createElement("a-entity")
+    line.setAttribute("id", "dragginLine")
+    line.setAttribute("line", "start", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z)
+    line.setAttribute("line", "end", "")
+    line.setAttribute("line", "color", "blue")
+    line.setAttribute("line-draggin-offset", "")
+
+    _scene.appendChild(line)
+
+}
+
+AFRAME.registerComponent('line-draggin-offset', {
+    tick: function () {
+        let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
+        let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree1.vertical
+
+        let height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance1
+        let targetPoint = new THREE.Vector3(_originPoint.x, height, _originPoint.z)
+        this.el.setAttribute("line", "end", targetPoint)
+
+        _originPoint = targetPoint
+
+        let lines = document.querySelectorAll(".temporalGizmo")
+
+        lines.forEach(lineEl => {
+            let line =  lineEl.getAttribute("line")
+            let newStartPostion = new THREE.Vector3(line.start.x, height, line.start.z)
+            let newEndPosition = new THREE.Vector3(line.end.x, height, line.end.z)
+            
+            lineEl.setAttribute("line", "start", newStartPostion)
+            lineEl.setAttribute("line", "end", newEndPosition)
+        })
+        
+        
+        
+    }
+});
+
+
+function CreateOrModifyCubeGuideLine(targetPoint, previousLine, id) {
+    let currentLine = null
+    let lines = document.querySelectorAll(".temporalGizmo")
+    lines.forEach(line => {
+        if(currentLine == null && line.getAttribute("id") == id)
+            currentLine = line
+    })
+    if(!currentLine) {
+        let line = document.createElement("a-entity")
+        line.setAttribute("id", id)
+        line.setAttribute("class", "temporalGizmo gizmos")
+        line.setAttribute("line", "start", targetPoint)
+        line.setAttribute("line", "color", "green")
+        _scene.appendChild(line)
+    } else {
+        currentLine.setAttribute("line", "start", targetPoint)
+        currentLine.setAttribute("line", "end", previousLine.x + " " + targetPoint.y + " " + previousLine.z )
+    }
+}
+
+
+function CreateOrModifyBaseGuideLine(originPoint, endPoint, id, orientation) {
+    let currentLine = null
+    let lines = document.querySelectorAll(".temporalGizmo")
+    lines.forEach(line => {
+        if(currentLine == null && line.getAttribute("id") == id)
+            currentLine = line
+    })
+    if(!currentLine) {
+        let line = document.createElement("a-entity")
+        line.setAttribute("id", id)
+        line.setAttribute("line", "start", originPoint)
+        line.setAttribute("line", "color", "green")
+        line.setAttribute("class", "temporalGizmo gizmos")
+        _scene.appendChild(line)
+    } else {
+        currentLine.setAttribute("line", "start", originPoint)
+
+        if(orientation == "x")
+            currentLine.setAttribute("line", "end", endPoint + " " + originPoint.y + " " + originPoint.z)
+        else if(orientation == "z")
+            currentLine.setAttribute("line", "end", originPoint.x + " " + originPoint.y + " " + endPoint)
+    }
+}
 
 export function NormalizeAngleInRadians(cameraRotation) {
     let pi = Math.PI

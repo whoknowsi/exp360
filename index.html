@@ -19,9 +19,9 @@
                 <a-image id="cursor-prev" position="0 1.6 0"src="#cursor-img" geometry="primitive: circle; radius: .1"></a-image>
                 <a-entity 
                     id="cursor-prev-raycast" 
-                    position="0 1.6 -1" 
-                    cursor="fuseTimeout: 1500"
-                    raycaster="objects: .collidable; showLine: true">
+                    position="0 1.6 -.1" 
+                    cursor="fuseTimeout: 500"
+                    raycaster="objects: .collidable; showLine: true; near: 0">
                 </a-entity>
             </a-entity>
             
@@ -37,7 +37,7 @@
                     cursor="fuseTimeout: 1500"
                     raycaster="objects: none; showLine: true"
                     visible="false">
-                        <a-image position= "0 0 -1" src="#cursor-img" height=".05" width=".05" material="alphaTest: 0.5"></a-image>
+                        <a-image position= "0 0 -.1" src="#cursor-img" height=".01" width=".01" material="alphaTest: 0.5"></a-image>
                 </a-entity>
             </a-entity>
 
@@ -55,16 +55,70 @@
             <a-box 
                 class="structureTarget" 
                 position="0 0 0" 
-                visible="true" 
                 rotation="0 0 0" 
-                width="30" 
+                width="100" 
                 height=".1" 
-                depth="30" 
+                depth="100" 
                 color="#7BC8A4"  
                 opacity="0"
                 raycaster-listener>
             </a-box>
-            <a-sky radius="100" src="./img/casa1.jpg" ></a-sky>
+            <a-box 
+                class="structureTarget" 
+                position="0 10 0" 
+                rotation="0 0 0" 
+                width="100" 
+                height=".1" 
+                depth="100" 
+                color="#7BC8A4"  
+                opacity="0"
+                raycaster-listener>
+            </a-box>
+            <a-box 
+                class="structureTarget" 
+                position="-20 0 0" 
+                rotation="0 0 0" 
+                width=".1" 
+                height="100" 
+                depth="100" 
+                color="#7BC8A4"  
+                opacity="0"
+                raycaster-listener>
+            </a-box>
+            <a-box 
+                class="structureTarget" 
+                position="20 0 0" 
+                rotation="0 0 0" 
+                width=".1" 
+                height="100" 
+                depth="100" 
+                color="#7BC8A4"  
+                opacity="0"
+                raycaster-listener>
+            </a-box>
+            <a-box 
+                class="structureTarget" 
+                position="0 0 20" 
+                rotation="0 0 0" 
+                width="100" 
+                height="100" 
+                depth=".1" 
+                color="#7BC8A4"  
+                opacity="0"
+                raycaster-listener>
+            </a-box>
+            <a-box 
+                class="structureTarget" 
+                position="0 0 -20" 
+                rotation="0 0 0" 
+                width="100" 
+                height="100" 
+                depth=".1" 
+                color="#7BC8A4"  
+                opacity="0"
+                raycaster-listener>
+            </a-box>
+            <a-sky radius="100" src="./img/Teatro1.jpg" ></a-sky>
             
         </a-scene>
 
@@ -72,9 +126,10 @@
             <button class="button toggleEditor">Editar</button>
         </div>
         <div class="buttonBuilds">
-            <button class="editorButton floor" >Construir piso</button>
+            <button class="editorButton cube" >Construir cubo</button>
+            <button class="editorButton offset" >Construir cubo elevado</button>
             <button class="editorButton toggleStructure">Ocultar estructuras</button>
-            <button class="editorButton toggleGuizmos">Ocultar guizmos</button>
+            <button class="editorButton toggleGizmos">Ocultar gizmos</button>
         </div>
 
             

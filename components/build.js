@@ -1,20 +1,31 @@
-import { NormalizeAngleInRadians, CreateFirstPoint, CreateFloor } from "./helper.js"
+import { NormalizeAngleInRadians, SetBase, SetVolume, CreateCube, SetOffset } from "./helper.js"
 
 const delta = 6;
 let startCamRotationX, startCamRotationY;
 let raycaster
 let pi = Math.PI
-let camera, cameraRotation
-let buttonFloor = document.querySelector(".floor")
-let point1, point2, point1Degree, alpha, point2Degree
+let buttonCube = document.querySelector(".cube")
+let buttonOffset = document.querySelector(".offset")
+let distance1, distance2, distance3, degree1, degree2
+let offset = true
+let camera = document.querySelector("#camera")
+let cameraRotation = camera.getAttribute("rotation")
 
-buttonFloor.addEventListener("click", () => {
+buttonCube.addEventListener("click", () => {
     let query = document.querySelectorAll(".structureTarget")
     for (let i = 0; i < query.length; i++) {
-
         const item = query[i];
         item.addEventListener('mousedown', OnMouseDown)
-        item.addEventListener('mouseup', OnMouseUp)
+        item.addEventListener('mouseup', OnMouseUpCube)
+    }
+})
+
+buttonOffset.addEventListener("click", () => {
+    let query = document.querySelectorAll(".structureTarget")
+    for (let i = 0; i < query.length; i++) {
+        const item = query[i];
+        item.addEventListener('mousedown', OnMouseDown)
+        item.addEventListener('mouseup', OnMouseUpOffset)
     }
 })
 
@@ -26,7 +37,21 @@ var OnMouseDown = function()  {
     startCamRotationY = cameraRotation.y
 }
 
-var OnMouseUp = function(event) {
+var OnMouseUpCube = function(event) {
+    let userClick = CheckIfUserClick()
+    if(userClick) {
+        SetParamsCubeWhenClick(event)
+    }
+}
+
+var OnMouseUpOffset = function(event) {
+    let userClick = CheckIfUserClick()
+    if(userClick) {
+        SetParamsOffsetCubeWhenClick(event)
+    }
+}
+
+function CheckIfUserClick() {
     camera = document.querySelector("#camera")
     cameraRotation = camera.getAttribute("rotation")
 
@@ -35,36 +60,7 @@ var OnMouseUp = function(event) {
 
     let raycasterEdit = document.querySelector("#cursor-edit")
     raycaster = raycasterEdit.components.raycaster
-    let userClick = (diffX < delta && diffY < delta)
-    if(userClick) {
-        OnMouseClick(event)
-    }
-}
-
-function OnMouseClick(event) {
-    let camera = document.querySelector("#camera")
-    let cameraRotation = camera.getAttribute("rotation")
-
-    let distance = raycaster.getIntersection(event.target).distance
-    let cameraRotationHorizontal = NormalizeAngleInRadians(cameraRotation.y)
-    let cameraRotationVertical = NormalizeAngleInRadians(cameraRotation.x)
-    let distancesOriginFloorToPoint = Math.abs(distance * Math.sin((pi / 2) - cameraRotationVertical))
-
-    if (point1 == undefined) {
-        point1 = distancesOriginFloorToPoint
-        point1Degree = cameraRotationHorizontal
-
-        CreateFirstPoint(event)
-    }
-    else if (point2 == undefined) {
-        point2 = distancesOriginFloorToPoint
-        point2Degree = cameraRotationHorizontal
-
-        CreateFloor(point1, point2, point1Degree, point2Degree)
-
-        UnsuscribeFromEvents()
-        CleanVariables()
-    }
+    return (diffX < delta && diffY < delta)
 }
 
 function UnsuscribeFromEvents() {
@@ -73,12 +69,86 @@ function UnsuscribeFromEvents() {
         const item = query[i];
 
         item.removeEventListener('mousedown', OnMouseDown)
-        item.removeEventListener('mouseup', OnMouseUp)
+        item.removeEventListener('mouseup', OnMouseUpCube)
+        item.removeEventListener('mouseup', OnMouseUpOffset)
+    }
+}
+
+function CleanVariables() {
+    distance1 = undefined
+    distance2 = undefined
+    distance3 = undefined
+    offset = true
+}
+
+function SetParamsCubeWhenClick(event) {
+
+    let distance = raycaster.getIntersection(event.target).distance
+    let originPoint = raycaster.getIntersection(event.target).point
+    let cameraRotationHorizontal = NormalizeAngleInRadians(cameraRotation.y)
+    let cameraRotationVertical = NormalizeAngleInRadians(cameraRotation.x)
+    let distancesOriginFloorToPoint = Math.abs(distance * Math.sin((pi / 2) - cameraRotationVertical))
+
+    if (distance1 == undefined) {
+        distance1 = distancesOriginFloorToPoint
+        degree1 = {
+            horizontal: cameraRotationHorizontal,
+            vertical: cameraRotationVertical
+        }
+
+        SetBase(originPoint, distance1, degree1)
+    }
+    else if (distance2 == undefined) {
+        distance2 = distancesOriginFloorToPoint
+        degree2 = {
+            horizontal: cameraRotationHorizontal,
+            vertical: cameraRotationVertical
+        }
+        SetVolume(distance2, degree2)
+    }
+    else if(distance3 == undefined) {
+        distance3 = distancesOriginFloorToPoint
+
+        CreateCube()
+        UnsuscribeFromEvents()
+        CleanVariables()
     }
 }
 
 
-function CleanVariables() {
-    point1 = undefined
-    point2 = undefined
+function SetParamsOffsetCubeWhenClick(event) {
+
+    let distance = raycaster.getIntersection(event.target).distance
+    let originPoint = raycaster.getIntersection(event.target).point
+    let cameraRotationHorizontal = NormalizeAngleInRadians(cameraRotation.y)
+    let cameraRotationVertical = NormalizeAngleInRadians(cameraRotation.x)
+    let distancesOriginFloorToPoint = Math.abs(distance * Math.sin((pi / 2) - cameraRotationVertical))
+
+    if (distance1 == undefined) {
+        distance1 = distancesOriginFloorToPoint
+        degree1 = {
+            horizontal: cameraRotationHorizontal,
+            vertical: cameraRotationVertical
+        }
+
+        SetBase(originPoint, distance1, degree1)
+    }
+    else if (distance2 == undefined) {
+        distance2 = distancesOriginFloorToPoint
+        degree2 = {
+            horizontal: cameraRotationHorizontal,
+            vertical: cameraRotationVertical
+        }
+        SetOffset(distance2, degree2)
+    }
+    else if (offset) {
+        offset = false
+        SetVolume(null, null)
+    }
+    else if(distance3 == undefined) {
+
+        CreateCube()
+        UnsuscribeFromEvents()
+        CleanVariables()
+    }
 }
