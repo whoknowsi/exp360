@@ -54,8 +54,6 @@ export function CreateCube() {
     let middlePoint = CalculateMiddlePointOfDiagonal(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
     let size = CalculateSize(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
 
-    console.log(size)
-
     let newCube = document.createElement("a-box")
     newCube.setAttribute("width",  Math.abs(size.x))
     newCube.setAttribute("depth", Math.abs(size.z))

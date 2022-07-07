@@ -118,9 +118,7 @@ function animate() {
 function render() {
 
     cursorPrev.setAttribute("position", pointer.x + " " + pointer.y + " " + pointer.z)
-    raycasterPrev.setAttribute("position", pointer)
     raycasterPrev.setAttribute("raycaster", "direction", pointer.x + " " + (pointer.y - 1.6) + " " + pointer.z)
-
 }
 
 

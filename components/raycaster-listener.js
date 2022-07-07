@@ -11,7 +11,6 @@ AFRAME.registerComponent('raycaster-listener', {
         cursorPrev = document.querySelector("#cursor-prev")
 
         this.el.addEventListener('raycaster-intersected', evt => {
-            console.log(evt.detail.el.components.raycaster.getIntersection(this.el))
             this.raycaster = evt.detail.el;
             AddTarget(this.el);
         });
@@ -47,7 +46,7 @@ function CursorManagment(intersection, target, cornerValue) {
     let normal = intersection.face.normal;
     let distance = intersection.distance;
     let cornersToRotate = target.getAttribute("rotate-corner")
-    let scale = 1.5/(1 + distance/2)
+    let scale = 3/(1 + distance*2)
     let edge
     
     if(cornersToRotate == "") {
