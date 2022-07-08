@@ -46,13 +46,21 @@ var _scene = document.querySelector("#scene")
 
 export function CreateCube() {
 
-    RemoveGuideLinesCube()
 
     let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
     let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree2.vertical
     let height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance2
     let middlePoint = CalculateMiddlePointOfDiagonal(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
     let size = CalculateSize(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
+
+    let structureContainer = _scene.querySelector("#structure-container")
+    console.log(structureContainer)
+    let containerPosition = structureContainer.getAttribute("position")
+
+
+    let container = document.createElement("a-entity")
+    container.setAttribute("position", (middlePoint.x - containerPosition.x) + " " + (height/2+_originPoint.y) + " " + (middlePoint.z - containerPosition.z)) 
+    let gizmosContainer = document.createElement("a-entity")
 
     let newCube = document.createElement("a-box")
     newCube.setAttribute("width",  Math.abs(size.x))
@@ -61,14 +69,69 @@ export function CreateCube() {
         newCube.setAttribute("height", height)
     else
         newCube.setAttribute("height", -height)
-    newCube.setAttribute("position", middlePoint.x + " " + (height/2+_originPoint.y) + " " + middlePoint.z) 
     newCube.setAttribute("opacity", ".3")
     newCube.setAttribute("class", "collidable structure")
     newCube.setAttribute("raycaster-listener", "")
     newCube.setAttribute("rotate-corner", "all")
 
-    _scene.appendChild(newCube)
+    let gizmos = CreatePermanentGizmos(Math.abs(size.x)/2, height/2, Math.abs(size.z)/2)
+    gizmosContainer.append(gizmos)
+    container.appendChild(newCube)
+    container.appendChild(gizmosContainer)
+    structureContainer.appendChild(container)
 
+    RemoveGuideLinesCube()
+
+}
+
+function CreatePermanentGizmos(width, height, depth) {
+    let gizmoContainer = document.createElement("a-entity")
+    let bottomLeftFront = new THREE.Vector3(-width, -height, -depth)
+    let upLeftFront = new THREE.Vector3(-width, height, -depth)
+    let bottomRightFront = new THREE.Vector3(width, -height, -depth)
+    let upRightFront = new THREE.Vector3(width, height, -depth)
+    let bottomLeftBack = new THREE.Vector3(-width, -height, depth)
+    let upLeftBack = new THREE.Vector3(-width, height, depth)
+    let bottomRightBack = new THREE.Vector3(width, -height, depth)
+    let upRightBack = new THREE.Vector3(width, height, depth)
+    
+    let line = CreateGizmoLine(bottomLeftFront, upLeftFront)
+    let line2 = CreateGizmoLine(bottomLeftFront, bottomRightFront)
+    let line3 = CreateGizmoLine(upRightFront, upLeftFront)
+    let line4 = CreateGizmoLine(upRightFront, bottomRightFront)
+
+    let line5 = CreateGizmoLine(bottomLeftBack, upLeftBack)
+    let line6 = CreateGizmoLine(bottomLeftBack, bottomRightBack)
+    let line7 = CreateGizmoLine(upRightBack, upLeftBack)
+    let line8 = CreateGizmoLine(upRightBack, bottomRightBack)
+
+    let line9 = CreateGizmoLine(bottomLeftFront, bottomLeftBack)
+    let line10 = CreateGizmoLine(bottomRightFront, bottomRightBack)
+    let line11 = CreateGizmoLine(upRightFront, upRightBack)
+    let line12 = CreateGizmoLine(upLeftFront, upLeftBack)
+
+    gizmoContainer.appendChild(line)
+    gizmoContainer.appendChild(line2)
+    gizmoContainer.appendChild(line3)
+    gizmoContainer.appendChild(line4)
+    gizmoContainer.appendChild(line5)
+    gizmoContainer.appendChild(line6)
+    gizmoContainer.appendChild(line7)
+    gizmoContainer.appendChild(line8)
+    gizmoContainer.appendChild(line9)
+    gizmoContainer.appendChild(line10)
+    gizmoContainer.appendChild(line11)
+    gizmoContainer.appendChild(line12)
+
+    return gizmoContainer
+}
+
+function CreateGizmoLine(start, end) {
+    let line = document.createElement("a-entity")
+    line.setAttribute("line", "start", start)
+    line.setAttribute("line", "end", end)
+    line.setAttribute("line", "color", "red")
+    return line
 }
 
 function RemoveGuideLinesCube() {
@@ -77,8 +140,9 @@ function RemoveGuideLinesCube() {
 
     let temporalGizmos = document.querySelectorAll(".temporalGizmo")
     temporalGizmos.forEach(temporalGizmo => {
-        temporalGizmo.removeAttribute("class", "temporalGizmo")
-        temporalGizmo.setAttribute("class", "gizmo")
+        temporalGizmo.remove()
+        // temporalGizmo.removeAttribute("class", "temporalGizmo")
+        // temporalGizmo.setAttribute("class", "gizmo")
     })
 }
 
@@ -180,6 +244,7 @@ AFRAME.registerComponent('line-draggin-floor', {
                 
         });
     
+        console.log(intersection.distance)
         this.el.setAttribute("line", "start",  _originPoint)
         this.el.setAttribute("line", "end", intersection.point)
         let cameraRotationHorizontal = NormalizeAngleInRadians(_cameraRotation.y)

@@ -20,7 +20,7 @@ let senTheta
 let cosAlpha
 let senAlpha
 let previousRotation
-let cameraHeight = 1.5
+let cameraHeight = 1.6
 
 var structuresVisible = true
 var gizmosVisible = true
@@ -34,7 +34,7 @@ animate();
 
 
 function init() {
-
+    let heig
     SaveInitialValues()
     InitButtons()
 

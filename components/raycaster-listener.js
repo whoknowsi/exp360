@@ -11,7 +11,6 @@ AFRAME.registerComponent('raycaster-listener', {
         cursorPrev = document.querySelector("#cursor-prev")
 
         this.el.addEventListener('raycaster-intersected', evt => {
-            console.log("test")
             this.raycaster = evt.detail.el;
             AddTarget(this.el);
         });

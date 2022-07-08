@@ -10,17 +10,23 @@
         <a-scene id="scene" render-enabled="true">
             <!-- Recursos -->
             <a-assets>
-                <img class="skyImage" id="cursor-img" src="./img/cursor.png">
+                <img id="cursor-img" src="./img/cursor.png">
                 <img class="skyImage" id="iglesia1" src="./img/Iglesia1.jpg">
                 <img class="skyImage" id="iglesia2" src="./img/Iglesia2.jpg">
                 <img class="skyImage" id="iglesia3" src="./img/Iglesia3.jpg">
                 <img class="skyImage" id="iglesia4" src="./img/Iglesia4.jpg">
-                <img class="skyImage" id="iglesia5" src="./img/Iglesia5.jpg">
-                <img class="skyImage" id="iglesia6" src="./img/Iglesia6.jpg">
-                <img class="skyImage" id="iglesia7" src="./img/Iglesia7.jpg">
-                <img class="skyImage" id="iglesia8" src="./img/Iglesia8.jpg">
-                <img class="skyImage" id="iglesia9" src="./img/Iglesia9.jpg">
-                <img class="skyImage" id="iglesia10" src="./img/Iglesia10.jpg">
+                <img class="skyImage" id="iglesia-1" src="./img/Iglesia-1.jpg">
+                <img class="skyImage" id="iglesia-2" src="./img/Iglesia-2.jpg">
+                <img class="skyImage" id="iglesia-3" src="./img/Iglesia-3.jpg">
+                <img class="skyImage" id="iglesia-4" src="./img/Iglesia-4.jpg">
+                <img class="skyImage" id="iglesia-5" src="./img/Iglesia-5.jpg">
+                <img class="skyImage" id="iglesia-6" src="./img/Iglesia-6.jpg">
+                <img class="skyImage" id="iglesia-7" src="./img/Iglesia-7.jpg">
+                <img class="skyImage" id="iglesia-8" src="./img/Iglesia-8.jpg">
+                <img class="skyImage" id="iglesia-9" src="./img/Iglesia-9.jpg">
+                <img class="skyImage" id="iglesia-10" src="./img/Iglesia-10.jpg">
+
+
             </a-assets>
             
             <!-- Cursor independiente de la cámara (Para modo previsualización) -->
@@ -53,7 +59,7 @@
 
             <a-box 
                 class="structureTarget" 
-                position="0 0 0" 
+                position="0 -.05 0" 
                 rotation="0 0 0" 
                 width="100" 
                 height=".1" 
@@ -118,113 +124,6 @@
                 raycaster-listener>
             </a-box>
 
-            <a-box 
-                class="skyChanger current" 
-                position="0 0 0" 
-                width="1.029" 
-                height="0.25"  
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia1;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box> 
-
-            <a-box 
-                class="skyChanger" 
-                position="2.33 0 0" 
-                width="1.029" 
-                height="0.25" 
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia2;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-            <a-box 
-                class="skyChanger" 
-                position="-2.567 0 .091" 
-                width="1.029" 
-                height="0.25" 
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia3;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-            <a-box 
-                class="skyChanger" 
-                position="-4.881 0 .126" 
-                width="1.029" 
-                height="0.25" 
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia4;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-            <a-box 
-                class="skyChanger" 
-                position="4.6 0 0"  
-                width="1.029" 
-                height="0.25"  
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia5;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-
-            <a-box 
-                class="skyChanger" 
-                position="6.9 0 0" 
-                width="1.029" 
-                height="0.25"  
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia6;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-
-            <a-box 
-                class="skyChanger" 
-                position="9.2 0 0" 
-                width="1.029" 
-                height="0.25" 
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia7;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-            <a-box 
-                class="skyChanger" 
-                position="11.5 0 0" 
-                width="1.029" 
-                height="0.25"  
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia8;"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-            <a-box 
-                class="skyChanger" 
-                position="13.8 0 0" 
-                width="1.029" 
-                height="0.25" 
-                depth="0.944"
-                color="#7BC8A4"  
-                rotate="0 0 0"
-                change-sky="target: #iglesia9; rotation: 0 90 0"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-            <a-box 
-                class="skyChanger" 
-                position="13.855 0 -3.638" 
-                width="1.029" 
-                height="0.25" 
-                depth="0.944" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia10; rotation: 0 90 0"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box>
-
-
-
             <a-sky id="sky2" radius="100" src="#iglesia1"
             animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500"
             animation__movein="startEvents: movein; property: position; from: 0 0 0; to: 0 0 0; dur: 400"></a-sky>
@@ -233,7 +132,32 @@
                 animation__moveout="startEvents: moveout; property: position; from: 0 0 0; to: 50 0 12; dur: 350"
                 animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 1"></a-sky>
             
-            </a-scene>
+            <a-entity id="structure-container">
+                <a-box 
+                class="skyChanger current" 
+                position="0 .1 0" 
+                width="1" 
+                height=".2"  
+                depth="1" 
+                color="#7BC8A4"  
+                change-sky="target: #iglesia1; rotation: 0 0 0"
+                material= "opacity: 0.5; alphaTest: .5">
+            </a-box> 
+
+                <a-box 
+                    class="skyChanger" 
+                    position="-0.124 .1 -2.482" 
+                    width="1" 
+                    height=".2"  
+                    depth="1" 
+                    color="#7BC8A4"  
+                    change-sky="target: #iglesia2; rotation: 0 -90 0"
+                    material= "opacity: 0.5; alphaTest: .5">
+                </a-box> 
+            </a-entity>
+        </a-scene>
+
+            
 
 
         <div class="buttonContainer">
@@ -242,6 +166,8 @@
         <div class="buttonBuilds">
             <button class="editorButton cube" >Construir cubo</button>
             <button class="editorButton offset" >Construir cubo elevado</button>
+            <button class="editorButton skyPointButton" >Poner viaje</button>
+            <button class="editorButton skyEditPositionButton" >Editar viaje</button>
             <button class="editorButton toggleStructure">Ocultar estructuras</button>
             <button class="editorButton toggleGizmos">Ocultar gizmos</button>
         </div>
@@ -254,7 +180,8 @@
         
 		<!-- Import maps polyfill -->
 		<!-- Remove this when import maps will be widely supported -->
-		<script src="./components/ChangeSky.js"></script> 
+        <script type="module" src="./components/ChangeSky/ChangeSkyButtons.js"></script> 
+		<script src="./components/ChangeSky/ChangeSky.js"></script> 
         
 	</body>
 </html>
