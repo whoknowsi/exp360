@@ -1,4 +1,5 @@
 import { NormalizeAngleInRadians, SetBase, SetVolume, CreateCube, SetOffset } from "./helper.js"
+import { ChangeTargetEditRaycaster } from "./raycaster-listener.js"
 
 const delta = 6;
 let startCamRotationX, startCamRotationY;
@@ -12,6 +13,7 @@ let camera = document.querySelector("#camera")
 let cameraRotation = camera.getAttribute("rotation")
 
 buttonCube.addEventListener("click", () => {
+    ChangeTargetEditRaycaster(".structureTarget")
     let query = document.querySelectorAll(".structureTarget")
     for (let i = 0; i < query.length; i++) {
         const item = query[i];
@@ -21,6 +23,7 @@ buttonCube.addEventListener("click", () => {
 })
 
 buttonOffset.addEventListener("click", () => {
+    ChangeTargetEditRaycaster(".structureTarget")
     let query = document.querySelectorAll(".structureTarget")
     for (let i = 0; i < query.length; i++) {
         const item = query[i];

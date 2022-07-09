@@ -46,7 +46,6 @@ var _scene = document.querySelector("#scene")
 
 export function CreateCube() {
 
-
     let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
     let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree2.vertical
     let height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance2
@@ -54,12 +53,11 @@ export function CreateCube() {
     let size = CalculateSize(_distance1, _distance2, _degree1.horizontal, _degree2.horizontal)
 
     let structureContainer = _scene.querySelector("#structure-container")
-    console.log(structureContainer)
     let containerPosition = structureContainer.getAttribute("position")
 
 
     let container = document.createElement("a-entity")
-    container.setAttribute("position", (middlePoint.x - containerPosition.x) + " " + (height/2+_originPoint.y) + " " + (middlePoint.z - containerPosition.z)) 
+    container.setAttribute("position", (middlePoint.x - containerPosition.x) + " " + (height/2+_originPoint.y - containerPosition.y) + " " + (middlePoint.z - containerPosition.z)) 
     let gizmosContainer = document.createElement("a-entity")
 
     let newCube = document.createElement("a-box")
@@ -241,10 +239,8 @@ AFRAME.registerComponent('line-draggin-floor', {
                 intersection = raycaster.getIntersection(target) 
                 _target = target
             }
-                
         });
     
-        console.log(intersection.distance)
         this.el.setAttribute("line", "start",  _originPoint)
         this.el.setAttribute("line", "end", intersection.point)
         let cameraRotationHorizontal = NormalizeAngleInRadians(_cameraRotation.y)

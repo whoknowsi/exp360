@@ -196,5 +196,10 @@ if(query == null) {
     }
 }
 
+export function ChangeTargetEditRaycaster(className) {
+    let raycaster = document.querySelector("#cursor-edit")
+    raycaster.setAttribute("raycaster", "objects", className)
+}
+
 
 

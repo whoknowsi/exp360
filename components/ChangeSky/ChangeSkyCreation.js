@@ -48,7 +48,6 @@ function DisplaySkies() {
 
 function SelecSkyPosition(id) {
     CreatePointer(id)
-    console.log(id)
 }
 function CreatePointer(id) {
     let pointer = document.createElement("a-cylinder")
@@ -67,7 +66,6 @@ function ShowButtonRotateSky() {
     button.addEventListener("click", () => {
         let sky = scene.querySelector("#sky2")
         let skyrotation = sky.getAttribute("rotation")
-        console.log(skyrotation.y + 90)
         if(skyrotation.y + 90 >= 360)
             sky.setAttribute("rotation", skyrotation.x + " " + (skyrotation.y + 90 - 360) + " " + skyrotation.z)
         else
@@ -132,8 +130,6 @@ AFRAME.registerComponent('sky-position-pointer', {
         sky1.setAttribute("opacity", 0)
         sky2.setAttribute("src", "#" + this.data.id)
         position = new THREE.Vector3(originPosition.x, originPosition.y, originPosition.z)
-        console.log(position)
-
     },
     tick: function () {
         let element = this.el
@@ -156,6 +152,7 @@ function CrateFinishButton(id) {
         let box = document.createElement("a-box")
         box.setAttribute("class", "skyChanger")
         box.setAttribute("position", -position.x + " .1 " + -position.z)
+        box.setAttribute("id", id + "-pointer")
         box.setAttribute("width", "1")
         box.setAttribute("height", ".2")
         box.setAttribute("depth", "1")
@@ -163,7 +160,6 @@ function CrateFinishButton(id) {
         let sky2Rotation = sky2.getAttribute("rotation")
         let sky1Rotation = sky1.getAttribute("rotation")
         let currentRotation = (sky2Rotation.x + " " + sky2Rotation.y + " " + sky2Rotation.z)
-        console.log("test")
         box.setAttribute("material", "opacity: 0.5; alphaTest: .5")
         box.setAttribute("change-sky", "target: #" + id + "; rotation: " + currentRotation)
         structureContainer.appendChild(box)
@@ -179,10 +175,4 @@ function CrateFinishButton(id) {
 
     buttonContainer.appendChild(button)
     
-}
-
-export function EditSky() {
-    let currentSkyChanger = document.querySelector(".current")
-    let id = currentSkyChanger.getAttribute("change-sky").target
-    console.log(id)
 }

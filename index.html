@@ -3,6 +3,7 @@
 	<head>
 		<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script> 
         <script type="module" src="./components/raycaster-listener.js"></script>
+        <script src="./components/ChangeSky/ChangeSky.js"></script> 
         <link rel="stylesheet" href="main.css">
 	</head>
 	<body>
@@ -39,6 +40,13 @@
                     cursor="fuseTimeout: 500"
                     raycaster="objects: .collidable, .skyChanger; showLine: true; near: 0; showLine: true">
                 </a-entity>
+            </a-entity>
+
+            <a-entity
+                id="raycaster-mouse-edit" 
+                position="0 1.6 0" 
+                cursor="rayOrigin: mouse"
+                raycaster="objects: .positionModifierArrow; showLine: true; near: 0">
             </a-entity>
             
             <!-- Cámara -->
@@ -134,7 +142,8 @@
             
             <a-entity id="structure-container">
                 <a-box 
-                class="skyChanger current" 
+                class="skyChanger current"
+                id="iglesia1-pointer"
                 position="0 .1 0" 
                 width="1" 
                 height=".2"  
@@ -146,6 +155,7 @@
 
                 <a-box 
                     class="skyChanger" 
+                    id="iglesia2-pointer"
                     position="-0.124 .1 -2.482" 
                     width="1" 
                     height=".2"  
@@ -181,7 +191,6 @@
 		<!-- Import maps polyfill -->
 		<!-- Remove this when import maps will be widely supported -->
         <script type="module" src="./components/ChangeSky/ChangeSkyButtons.js"></script> 
-		<script src="./components/ChangeSky/ChangeSky.js"></script> 
-        
+
 	</body>
 </html>

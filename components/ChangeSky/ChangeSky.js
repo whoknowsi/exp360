@@ -8,15 +8,11 @@ AFRAME.registerComponent('change-sky', {
         }
     },
     init: function () {
-
-
         let data = this.data;
         let el = this.el;
         let sky1 = document.querySelector("#sky")
         let sky2 = document.querySelector("#sky2")
         let radiusSkyProportion = sky1.getAttribute("radius")/8
-        console.log("nuevo sky")
-
         el.addEventListener('click', evt => {
             ChangeSky(data, el, sky1, sky2, radiusSkyProportion)
         })
@@ -24,7 +20,6 @@ AFRAME.registerComponent('change-sky', {
 })
 
 function ChangeSky(data, el, sky1, sky2, radiusSkyProportion) {
-    console.log("here")
     let structureContainer = document.querySelector("#structure-container")
     let structureContainerPosition = structureContainer.getAttribute("position")
     let currentPoint = document.querySelector(".current")
@@ -43,8 +38,8 @@ function ChangeSky(data, el, sky1, sky2, radiusSkyProportion) {
 
 
     let targetSkyPosition = new THREE.Vector3(position.x*radiusSkyProportion, position.y*radiusSkyProportion, position.z*radiusSkyProportion)
-    structureContainer.setAttribute("position", (startPoint.x - position.x) + " " + (startPoint.y - positionTargetY) + " " +  (startPoint.z - position.z))
-
+    structureContainer.setAttribute("position", (startPoint.x - position.x) + " " + (startPoint.y + heightTarget/2 - positionTargetY - position.y) + " " +  (startPoint.z - position.z))
+    
     MakeTransitionBetweenSkies(data, targetSkyPosition)
     
 }
@@ -53,7 +48,6 @@ function ChangeSky(data, el, sky1, sky2, radiusSkyProportion) {
 function MakeTransitionBetweenSkies(data, targetSkyPosition) {
     let sky1 = document.querySelector("#sky")
     let sky2 = document.querySelector("#sky2")
-
 
     sky2.components.animation__movein.data.from = targetSkyPosition
     sky2.emit("movein")
@@ -66,8 +60,6 @@ function MakeTransitionBetweenSkies(data, targetSkyPosition) {
     }
 
     setTimeout(() => {
-
-        
         setTimeout(() => {
             if(data.rotation != "") {
                 sky1.setAttribute("rotation", data.rotation)
