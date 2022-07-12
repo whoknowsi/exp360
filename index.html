@@ -1,196 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script> 
-        <script type="module" src="./components/raycaster-listener.js"></script>
-        <script src="./components/ChangeSky/ChangeSky.js"></script> 
-        <link rel="stylesheet" href="main.css">
-	</head>
-	<body>
 
-        <a-scene id="scene" render-enabled="true">
-            <!-- Recursos -->
-            <a-assets>
-                <img id="cursor-img" src="./img/cursor.png">
-                <img class="skyImage" id="iglesia1" src="./img/Iglesia1.jpg">
-                <img class="skyImage" id="iglesia2" src="./img/Iglesia2.jpg">
-                <img class="skyImage" id="iglesia3" src="./img/Iglesia3.jpg">
-                <img class="skyImage" id="iglesia4" src="./img/Iglesia4.jpg">
-                <img class="skyImage" id="iglesia-1" src="./img/Iglesia-1.jpg">
-                <img class="skyImage" id="iglesia-2" src="./img/Iglesia-2.jpg">
-                <img class="skyImage" id="iglesia-3" src="./img/Iglesia-3.jpg">
-                <img class="skyImage" id="iglesia-4" src="./img/Iglesia-4.jpg">
-                <img class="skyImage" id="iglesia-5" src="./img/Iglesia-5.jpg">
-                <img class="skyImage" id="iglesia-6" src="./img/Iglesia-6.jpg">
-                <img class="skyImage" id="iglesia-7" src="./img/Iglesia-7.jpg">
-                <img class="skyImage" id="iglesia-8" src="./img/Iglesia-8.jpg">
-                <img class="skyImage" id="iglesia-9" src="./img/Iglesia-9.jpg">
-                <img class="skyImage" id="iglesia-10" src="./img/Iglesia-10.jpg">
+<head>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script type="module" src="./components/raycaster-listener.js"></script>
+    <script type="module" src="./components/info-spot.js"></script>
+    <script src="./components/ChangeSky/ChangeSky.js"></script>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+    <a-scene id="scene" render-enabled="true">
+        <!-- Recursos -->
+        <a-assets>
+            <img id="cursor-img" src="./img/cursor.png">
+            <img id="infoSpot-img" src="./img/infoSpotImg.png">
+            <img id="prueba" src="./img/prueba.jpg">
+            <img class="skyImage" id="iglesia1" src="./img/Iglesia1.jpg">
+            <img class="skyImage" id="iglesia2" src="./img/Iglesia2.jpg">
+            <img class="skyImage" id="iglesia3" src="./img/Iglesia3.jpg">
+            <img class="skyImage" id="iglesia4" src="./img/Iglesia4.jpg">
+            <img class="skyImage" id="iglesia-1" src="./img/Iglesia-1.jpg">
+            <img class="skyImage" id="iglesia-2" src="./img/Iglesia-2.jpg">
+            <img class="skyImage" id="iglesia-3" src="./img/Iglesia-3.jpg">
+            <img class="skyImage" id="iglesia-4" src="./img/Iglesia-4.jpg">
+            <img class="skyImage" id="iglesia-5" src="./img/Iglesia-5.jpg">
+            <img class="skyImage" id="iglesia-6" src="./img/Iglesia-6.jpg">
+            <img class="skyImage" id="iglesia-7" src="./img/Iglesia-7.jpg">
+            <img class="skyImage" id="iglesia-8" src="./img/Iglesia-8.jpg">
+            <img class="skyImage" id="iglesia-9" src="./img/Iglesia-9.jpg">
+            <img class="skyImage" id="iglesia-10" src="./img/Iglesia-10.jpg">
 
 
-            </a-assets>
-            
-            <!-- Cursor independiente de la cámara (Para modo previsualización) -->
-            <a-entity>
+        </a-assets>
 
-                <a-image id="cursor-prev" position="0 1.6 0"src="#cursor-img" geometry="primitive: circle; radius: .1"></a-image>
-                <a-entity 
-                    id="cursor-prev-raycast" 
-                    position="0 1.6 0" 
-                    cursor="fuseTimeout: 500"
-                    raycaster="objects: .collidable, .skyChanger; showLine: true; near: 0; showLine: true">
-                </a-entity>
+        <!-- Cursor independiente de la cámara (Para modo previsualización) -->
+        <a-entity>
+
+            <a-image id="cursor-prev" position="0 1.6 0" src="#cursor-img" geometry="primitive: circle; radius: .1">
+            </a-image>
+            <a-entity id="cursor-prev-raycast" position="0 1.6 0" cursor="fuseTimeout: 500"
+                raycaster="objects: .collidable, .infoSpotPointer, .skyChanger; showLine: true; near: 0; showLine: true">
             </a-entity>
+        </a-entity>
 
-            <a-entity
-                id="raycaster-mouse-edit" 
-                position="0 1.6 0" 
-                cursor="rayOrigin: mouse"
-                raycaster="objects: .positionModifierArrow; showLine: true; near: 0">
+        <a-entity id="raycaster-mouse-edit" position="0 1.6 0" cursor="rayOrigin: mouse"
+            raycaster="objects: .positionModifierArrow; showLine: true; near: 0">
+        </a-entity>
+
+        <!-- Cámara -->
+        <a-entity id="camera" camera look-controls position="0 1.6 0" rotation="0 90 0">
+            <!-- Cursor dependiente de la cámara (Para modo edición) -->
+            <a-entity id="cursor-edit" cursor="fuseTimeout: 1500" raycaster="objects: none; showLine: true"
+                visible="false">
+                <a-image position="0 0 -.1" src="#cursor-img" height=".01" width=".01" material="alphaTest: 0.5">
+                </a-image>
             </a-entity>
-            
-            <!-- Cámara -->
-            <a-entity 
-                id="camera" 
-                camera look-controls 
-                position="0 1.6 0" 
-                rotation="0 90 0">
-                <!-- Cursor dependiente de la cámara (Para modo edición) -->
-                <a-entity 
-                    id="cursor-edit" 
-                    cursor="fuseTimeout: 1500"
-                    raycaster="objects: none; showLine: true"
-                    visible="false">
-                        <a-image position= "0 0 -.1" src="#cursor-img" height=".01" width=".01" material="alphaTest: 0.5"></a-image>
-                </a-entity>
-            </a-entity>
+        </a-entity>
 
-            <a-box 
-                class="structureTarget" 
-                position="0 -.05 0" 
-                rotation="0 0 0" 
-                width="100" 
-                height=".1" 
-                depth="100" 
-                color="#7BC8A4"  
-                material= "opacity: 0; alphaTest: .5"
-                raycaster-listener>
-            </a-box>
-            <a-box 
-                class="structureTarget" 
-                position="0 10 0" 
-                rotation="0 0 0" 
-                width="100" 
-                height=".1" 
-                depth="100" 
-                color="#7BC8A4"  
-                material= "opacity: 0; alphaTest: .5"
-                raycaster-listener>
-            </a-box>
-            <a-box 
-                class="structureTarget" 
-                position="-20 0 0" 
-                rotation="0 0 0" 
-                width=".1" 
-                height="100" 
-                depth="100" 
-                color="#7BC8A4"  
-                material= "opacity: 0; alphaTest: .5"
-                raycaster-listener>
-            </a-box>
-            <a-box 
-                class="structureTarget" 
-                position="20 0 0" 
-                rotation="0 0 0" 
-                width=".1" 
-                height="100" 
-                depth="100" 
-                color="#7BC8A4"  
-                material= "opacity: 0; alphaTest: .5"
-                raycaster-listener>
-            </a-box>
-            <a-box 
-                class="structureTarget" 
-                position="0 0 20" 
-                rotation="0 0 0" 
-                width="100" 
-                height="100" 
-                depth=".1" 
-                color="#7BC8A4"  
-                material= "opacity: 0; alphaTest: .5"
-                raycaster-listener>
-            </a-box>
-            <a-box 
-                class="structureTarget" 
-                position="0 0 -20" 
-                rotation="0 0 0" 
-                width="100" 
-                height="100" 
-                depth=".1" 
-                color="#7BC8A4"  
-                material= "opacity: 0; alphaTest: .5"
-                raycaster-listener>
-            </a-box>
+        <a-box class="structureTarget" position="0 -.05 0" rotation="0 0 0" width="100" height=".1" depth="100"
+            color="#7BC8A4" material="opacity: 0; alphaTest: .5" raycaster-listener>
+        </a-box>
+        <a-box class="structureTarget" position="0 10 0" rotation="0 0 0" width="100" height=".1" depth="100"
+            color="#7BC8A4" material="opacity: 0; alphaTest: .5" raycaster-listener>
+        </a-box>
+        <a-box class="structureTarget" position="-20 0 0" rotation="0 0 0" width=".1" height="100" depth="100"
+            color="#7BC8A4" material="opacity: 0; alphaTest: .5" raycaster-listener>
+        </a-box>
+        <a-box class="structureTarget" position="20 0 0" rotation="0 0 0" width=".1" height="100" depth="100"
+            color="#7BC8A4" material="opacity: 0; alphaTest: .5" raycaster-listener>
+        </a-box>
+        <a-box class="structureTarget" position="0 0 20" rotation="0 0 0" width="100" height="100" depth=".1"
+            color="#7BC8A4" material="opacity: 0; alphaTest: .5" raycaster-listener>
+        </a-box>
+        <a-box class="structureTarget" position="0 0 -20" rotation="0 0 0" width="100" height="100" depth=".1"
+            color="#7BC8A4" material="opacity: 0; alphaTest: .5" raycaster-listener>
+        </a-box>
 
-            <a-sky id="sky2" radius="100" src="#iglesia1"
+        <a-sky id="sky2" radius="100" src="#iglesia1"
             animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500"
             animation__movein="startEvents: movein; property: position; from: 0 0 0; to: 0 0 0; dur: 400"></a-sky>
-            <a-sky id="sky" radius="100" src="#iglesia1"
-                animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 350"
-                animation__moveout="startEvents: moveout; property: position; from: 0 0 0; to: 50 0 12; dur: 350"
-                animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 1"></a-sky>
-            
-            <a-entity id="structure-container">
-                <a-box 
-                class="skyChanger current"
-                id="iglesia1-pointer"
-                position="0 .1 0" 
-                width="1" 
-                height=".2"  
-                depth="1" 
-                color="#7BC8A4"  
-                change-sky="target: #iglesia1; rotation: 0 0 0"
-                material= "opacity: 0.5; alphaTest: .5">
-            </a-box> 
+        <a-sky id="sky" radius="100" src="#iglesia1"
+            animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 350"
+            animation__moveout="startEvents: moveout; property: position; from: 0 0 0; to: 50 0 12; dur: 350"
+            animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 1"></a-sky>
 
-                <a-box 
-                    class="skyChanger" 
-                    id="iglesia2-pointer"
-                    position="-0.124 .1 -2.482" 
-                    width="1" 
-                    height=".2"  
-                    depth="1" 
-                    color="#7BC8A4"  
-                    change-sky="target: #iglesia2; rotation: 0 -90 0"
-                    material= "opacity: 0.5; alphaTest: .5">
-                </a-box> 
+        <a-entity id="structure-container"
+            animation__moveout="startEvents: moveout; property: position; from: 0 0 0; to: 50 0 12; dur: 350">
+            <a-entity id="info-spot-1657516212936">
+                <a-entity line="color: white; start: -1.325 0 -0.747; end: -1.358 1.122 -0.747; opacity: 0.990"></a-entity>
+                <a-image src="#infoSpot-img" geometry="primitive: circle; radius: .1;" position="-1.385 1.222 -0.747" class="infoSpotPointer" info-spot="">
+                </a-image>
             </a-entity>
-        </a-scene>
+            <a-entity id="info-spot-1657516212936">
+                <a-entity line="color: white; start: 1.325 0 -0.747; end: 1.358 1.122 -0.747; opacity: 0.990"></a-entity>
+                <a-image src="#infoSpot-img" geometry="primitive: circle; radius: .1;" position="1.385 1.222 -0.747" class="infoSpotPointer" info-spot="title: cacacacvasdfaasdfsdf; description: asdfasdfasdfasdf; image: prueba.jpg">
+                </a-image>
+            </a-entity>
+        </a-entity>
+    </a-scene>
 
-            
 
 
-        <div class="buttonContainer">
-            <button class="button toggleEditor">Editar</button>
+
+    <div class="buttonContainer">
+        <button class="button toggleEditor">Editar</button>
+        <button id="saveButton" class="button">Guardar</button>
+    </div>
+    <div class="buttonBuilds">
+        <button class="editorButton cube">Construir cubo</button>
+        <button class="editorButton cylinder">Construir cilindro</button>
+        <button class="editorButton offset">Construir cubo elevado</button>
+        <button class="editorButton infoSpotButton">Poner info</button>
+        <button class="editorButton skyPointButton">Poner viaje</button>
+        <button class="editorButton skyEditPositionButton">Editar viaje</button>
+        <button class="editorButton structuresEditorButton">Modo edición</button>
+        <button class="editorButton toggleStructure">Ocultar estructuras</button>
+        <button class="editorButton toggleGizmos">Ocultar gizmos</button>
+    </div>
+
+
+    <div class="infoPanelSetting">
+        <label>Título</label>
+        <input type="text" id="infoPanelSettingTitle"></input>
+        <label>descripción</label>
+        <textarea id="infoPanelSettingDescription"></textarea>
+        <div>
+            <button id="infoPanelSettingSave">Save</button>
+            <button id="infoPanelSettingCancel">Cancel</button>
         </div>
-        <div class="buttonBuilds">
-            <button class="editorButton cube" >Construir cubo</button>
-            <button class="editorButton offset" >Construir cubo elevado</button>
-            <button class="editorButton skyPointButton" >Poner viaje</button>
-            <button class="editorButton skyEditPositionButton" >Editar viaje</button>
-            <button class="editorButton toggleStructure">Ocultar estructuras</button>
-            <button class="editorButton toggleGizmos">Ocultar gizmos</button>
-        </div>
+    </div>
 
-            
-        <script src="./components/index.js"></script>
-        <script type="module" src="./components/build.js"></script> 
-        <script type="module" src="./components/helper.js"></script>
-        
-        
-		<!-- Import maps polyfill -->
-		<!-- Remove this when import maps will be widely supported -->
-        <script type="module" src="./components/ChangeSky/ChangeSkyButtons.js"></script> 
+    <script src="./components/index.js"></script>
+    <script type="module" src="./components/build.js"></script>
+    <script type="module" src="./components/helper.js"></script>
+    <script type="module" src="./components/StructureEditor/StructureModifierButtons.js"></script>
+    <script type="module" src="./components/ChangeSky/ChangeSkyButtons.js"></script>
+    <script type="module" src="./components/data/DataManagment.js"></script>
+    <script type="module" src="./components/InfoSpots/InfoSpotsButtons.js"></script>
 
-	</body>
+</body>
+
 </html>

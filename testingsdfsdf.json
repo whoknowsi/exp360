@@ -1,0 +1,52 @@
+{
+  "structures": [
+    {
+      "id": "structure-1657461154137",
+      "primitive": "box",
+      "depth": "0.6546369031663941",
+      "height": "0",
+      "width": "1.1156811763771535",
+      "position": {
+        "x": 1.6921926619152834,
+        "y": 7.450578348722203e-10,
+        "z": -1.672376245715785
+      }
+    },
+    {
+      "id": "structure-1657461161508",
+      "primitive": "box",
+      "depth": "0.559972079803067",
+      "height": "1.7293102238421472",
+      "width": "1.487179284955525",
+      "position": {
+        "x": -1.8089812513077392,
+        "y": 0.8646551126661316,
+        "z": -1.5920857076075567
+      }
+    }
+  ],
+  "skySpots": [
+    {
+      "id": "iglesia1-pointer",
+      "rotation": "0 0 0",
+      "target": "#iglesia1",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 0
+      },
+      "current": true
+    },
+    {
+      "id": "iglesia2-pointer",
+      "rotation": "0 -90 0",
+      "target": "#iglesia2",
+      "position": {
+        "x": -0.124,
+        "y": 0.1,
+        "z": -2.482
+      },
+      "current": false
+    }
+  ]
+}
