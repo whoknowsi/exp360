@@ -1,8 +1,9 @@
 import { ChangeTargetEditRaycasterMouse } from "../raycaster-listener.js"
 import { StartRaycastingStructures } from "./StructureModifer.js"
-let button = document.querySelector(".structuresEditorButton")
+let editStructureButton = document.querySelector(".structuresEditorButton")
 
-button.addEventListener("click", () => {
+editStructureButton.addEventListener("click", () => {
     ChangeTargetEditRaycasterMouse(".structure, .skyChanger, .positionModifierArrow")
     StartRaycastingStructures()
 })
+

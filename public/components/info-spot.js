@@ -29,7 +29,7 @@ AFRAME.registerComponent('info-spot', {
 }); 
 
 
-let infoSpotPointers = document.querySelectorAll(".infoSpotPointer")
+let infoSpotPointers = document.querySelectorAll(".infoSpot")
 infoSpotPointers.forEach(spot => {
     spot.setAttribute("info-spot", "")
 });

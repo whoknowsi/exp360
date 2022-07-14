@@ -1,4 +1,4 @@
-
+import { Height } from "./GlobalConfig.js"
 
 let container, stats;
 let camera, raycasterPrev, raycasterEdit, renderer
@@ -22,7 +22,7 @@ let senTheta
 let cosAlpha
 let senAlpha
 let previousRotation
-let cameraHeight = 1.6
+let cameraHeight = Height()
 
 var structuresVisible = true
 var gizmosVisible = true
@@ -59,7 +59,7 @@ function CreateSavedElements(data) {
     });
 
     structures.forEach(structure => {
-        structureContainer.appendChild(CreateStructure(structure))
+        structureContainer.appendChild(CreateStructureBox(structure))
     });
 
 
@@ -80,7 +80,7 @@ function CreateSkySpot(spot) {
     return spotEl
 }
 
-function CreateStructure(structure) {
+function CreateStructureBox(structure) {
     let structureContainer = document.createElement("a-entity")
     structureContainer.setAttribute("id", "container-" +  structure.id)
     structureContainer.setAttribute("position", structure.position.x + " " + structure.position.y + " " + structure.position.z)
@@ -92,6 +92,7 @@ function CreateStructure(structure) {
     structureEl.setAttribute("width", structure.width)
     structureEl.setAttribute("height", structure.height)
     structureEl.setAttribute("depth", structure.depth)
+    structureEl.setAttribute("radius", structure.radius)
     structureEl.setAttribute("color", "#7BC8A4")
     structureEl.setAttribute("opacity", ".3")
     structureEl.setAttribute("rotate-corner", "all")
@@ -201,7 +202,7 @@ function ToggleEditor(evt) {
     let raycasterPrevObjectsIsNull = (raycasterPrevObjects === 'none')
     if(raycasterPrevObjectsIsNull) {
         cursorPrev.setAttribute("visible", "true")
-        raycasterPrev.setAttribute("raycaster", "objects", ".collidable, .skyChanger, .infoSpotPointer")
+        raycasterPrev.setAttribute("raycaster", "objects", ".collidable, .skyChanger, .infoSpot")
 
         raycasterEdit.setAttribute("visible", "false")
         raycasterEdit.setAttribute("raycaster", "objects", "none")

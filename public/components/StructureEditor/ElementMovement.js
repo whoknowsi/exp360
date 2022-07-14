@@ -1,4 +1,5 @@
 import { NormalizeAngleInRadians } from "../helper.js"
+import { RemoveDeleteButton } from "./ElementDelete.js"
 
 let camera = document.querySelector("#camera")
 let x, y, z
@@ -130,6 +131,11 @@ var OnMouseUp = function() {
 
 }
 
+var OnResize = function() {
+    innerHeight = window.innerHeight
+    innerWidth = window.innerWidth
+}
+
 var OnMouseMove = function(evt) {
     if(startPoint == null) {
         startPoint = {
@@ -149,6 +155,7 @@ export function LoseFocus() {
     let arrowContainer = document.querySelector("#arrow-container")
     arrowContainer.remove()
     _originalId = null
+    RemoveDeleteButton()
 }
 
 

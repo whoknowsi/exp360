@@ -1,3 +1,5 @@
+import { GetIsDraggin, SetIsDraggin } from "./ChangeSkyStateHandler.js";
+
 AFRAME.registerComponent('change-sky', {
     schema: {
         target: {
@@ -14,8 +16,11 @@ AFRAME.registerComponent('change-sky', {
         let sky2 = document.querySelector("#sky2")
         let radiusSkyProportion = sky1.getAttribute("radius")/8
         el.addEventListener('click', evt => {
-            if(evt.detail.cursorEl.getAttribute("id") == "cursor-prev-raycast")
+            console.log(evt)
+
+            if(evt.path[1].getAttribute("id").includes("structure") || evt.detail.cursorEl.getAttribute("id") == "cursor-prev-raycast")
                 ChangeSky(data, el, sky1, sky2, radiusSkyProportion)
+                
         })
     },
 })
@@ -30,6 +35,8 @@ function ChangeSky(data, el, sky1, sky2, radiusSkyProportion) {
     let positionTargetY = el.object3D.position.y - heightTarget/2
     let position = new THREE.Vector3(startPoint.x + targetPoint.x, startPoint.y + targetPoint.y, startPoint.z + targetPoint.z)
 
+    if(GetIsDraggin()) { return }
+
     if(sky1.getAttribute("src") == data.target || sky2.getAttribute("src") == data.target) { return }
 
     currentPoint.classList.remove("current")
@@ -41,11 +48,19 @@ function ChangeSky(data, el, sky1, sky2, radiusSkyProportion) {
     let targetSkyPosition = new THREE.Vector3(position.x*radiusSkyProportion, position.y*radiusSkyProportion, position.z*radiusSkyProportion)
     let endPoint = new THREE.Vector3(startPoint.x - position.x, startPoint.y + heightTarget/2 - positionTargetY - position.y, startPoint.z - position.z)
     
+    if(targetSkyPosition.x < 0.000001 && targetSkyPosition.x > -0.000001) targetSkyPosition.x = 0
+    if(targetSkyPosition.y < 0.000001 && targetSkyPosition.y > -0.000001) targetSkyPosition.y = 0
+    if(targetSkyPosition.z < 0.000001 && targetSkyPosition.z > -0.000001) targetSkyPosition.z = 0
+
+    if(endPoint.x < 0.000001 && endPoint.x > -0.000001) endPoint.x = 0
+    if(endPoint.y < 0.000001 && endPoint.y > -0.000001) endPoint.y = 0
+    if(endPoint.z < 0.000001 && endPoint.z > -0.000001) endPoint.z = 0
 
     structureContainer.components.animation__moveout.data.to = endPoint.x + " " + endPoint.y + " " + endPoint.z 
     structureContainer.components.animation__moveout.data.from = startPoint.x + " " + startPoint.y + " " + startPoint.z
-
     structureContainer.emit("moveout")
+
+    SetIsDraggin(true)
     MakeTransitionBetweenSkies(data, targetSkyPosition)
     
 }
@@ -72,6 +87,8 @@ function MakeTransitionBetweenSkies(data, targetSkyPosition) {
             } else {
                 sky1.setAttribute("rotation", "0 0 0")
             }
+
+            SetIsDraggin(false)
 
             sky1.setAttribute("src", data.target)
             sky1.setAttribute("position", "0 0 0")

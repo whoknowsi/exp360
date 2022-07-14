@@ -43,9 +43,10 @@ var _originPoint, _distance1, _distance2, _degree1, _degree2
 var _camera = document.querySelector("#camera")
 var _cameraRotation = _camera.getAttribute("rotation")
 var _scene = document.querySelector("#scene")
+let _radius
+let _height
 
 export function CreateCube() {
-
     let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
     let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree2.vertical
     let height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance2
@@ -55,14 +56,25 @@ export function CreateCube() {
     let structureContainer = _scene.querySelector("#structure-container")
     let containerPosition = structureContainer.getAttribute("position")
 
+    let id = Date.now()
+    let position = {
+        x: middlePoint.x - containerPosition.x,
+        y: height/2+_originPoint.y - containerPosition.y,
+        z: middlePoint.z - containerPosition.z
+    }
+
+    RemoveGuideLinesCube()
+
+    if(isNaN(position.x) || isNaN(position.y) || isNaN(position.z)) { return }
 
     let container = document.createElement("a-entity")
-    let id = Date.now()
     container.setAttribute("id", "container-structure-" + id)
-    container.setAttribute("position", (middlePoint.x - containerPosition.x) + " " + (height/2+_originPoint.y - containerPosition.y) + " " + (middlePoint.z - containerPosition.z)) 
+    container.setAttribute("position", position) 
+    
     let gizmosContainer = document.createElement("a-entity")
 
     let newCube = document.createElement("a-box")
+    newCube.setAttribute("material", "color", "#7BC8A4")
     newCube.setAttribute("width",  Math.abs(size.x))
     newCube.setAttribute("depth", Math.abs(size.z))
     if(height > 0)
@@ -80,9 +92,47 @@ export function CreateCube() {
     container.appendChild(newCube)
     container.appendChild(gizmosContainer)
     structureContainer.appendChild(container)
+}
 
-    RemoveGuideLinesCube()
+export function CreateCylinder() {
 
+    let dragginLine = document.querySelector("#dragginLine")
+    dragginLine != null && dragginLine.remove()
+    let dragginCircle = document.querySelector("#dragginCircle")
+    dragginCircle != null && dragginCircle.remove()
+    let dragginCircleTop = document.querySelector("#dragginCircleTop")
+    dragginCircleTop != null && dragginCircleTop.remove()
+    
+    let structureContainer = _scene.querySelector("#structure-container")
+    let structureContainerPosition = structureContainer.getAttribute("position")
+    let id = Date.now()
+
+    let position = {
+        x: _originPoint.x - structureContainerPosition.x,
+        y: (_originPoint.y - structureContainerPosition.y) + _height/2,
+        z: _originPoint.z - structureContainerPosition.z
+    }
+
+    if(isNaN(position.x) || isNaN(position.y) || isNaN(position.z)) { return }
+
+    let container = document.createElement("a-entity")
+    container.setAttribute("id", "container-structure-" + id)
+    container.setAttribute("position", position) 
+    let cylinder = document.createElement("a-cylinder")
+    cylinder.setAttribute("geometry", {
+        height: _height,
+        radius: _radius
+    })
+    cylinder.setAttribute("material", {
+        color: "#7BC8A4",
+        opacity: ".3"
+    })
+    cylinder.setAttribute("raycaster-listener", "")
+    cylinder.setAttribute("class", "collidable structure")
+    cylinder.setAttribute("id", "structure-" + id)
+
+    container.appendChild(cylinder)
+    structureContainer.appendChild(container)
 }
 
 function CreatePermanentGizmos(width, height, depth) {
@@ -268,19 +318,28 @@ export function SetCylinderBase(originPoint, distance1, degree1) {
 
     let sphere = document.createElement("a-sphere")
     sphere.setAttribute("id", "dragginSphere")
-    sphere.setAttribute("radius", ".05")
+    sphere.setAttribute("radius", ".03")
     sphere.setAttribute("color", "green")
     sphere.setAttribute("position", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z) 
 
-    let line = document.createElement("a-entity")
-    line.setAttribute("id", "dragginLine")
-    line.setAttribute("line", "start", sphere.object3D.position)
-    line.setAttribute("line", "end", "")
-    line.setAttribute("line", "color", "blue")
-    line.setAttribute("line-draggin-cylinder-base", "")
+    let circle = document.createElement("a-entity")
+    circle.setAttribute("id", "dragginCircle")
+    circle.setAttribute("position", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z)
+    circle.setAttribute("rotation", "90 0 0")
+    circle.setAttribute("geometry", {
+        primitive: "circle",
+        radius: 1
+    })
+    circle.setAttribute("material", {
+        color: "white",
+        opacity: .3,
+        side: "double"
+    })
+    circle.setAttribute("line-draggin-cylinder-base", "")
 
     _scene.appendChild(sphere)
-    _scene.appendChild(line)
+    _scene.appendChild(circle)
+    console.log("test")
 }
 
 AFRAME.registerComponent('line-draggin-cylinder-base', {
@@ -295,16 +354,64 @@ AFRAME.registerComponent('line-draggin-cylinder-base', {
                 _target = target
             }
         });
+
+        _radius = Math.sqrt((intersection.point.x - _originPoint.x) * (intersection.point.x - _originPoint.x) + 
+            (intersection.point.y - _originPoint.y) * (intersection.point.y - _originPoint.y) + 
+            (intersection.point.z - _originPoint.z) * (intersection.point.z - _originPoint.z))
     
-        this.el.setAttribute("line", "start",  _originPoint)
-        this.el.setAttribute("line", "end", intersection.point)
-        let cameraRotationHorizontal = NormalizeAngleInRadians(_cameraRotation.y)
+        this.el.setAttribute("geometry", {
+            radius: _radius
+        }) 
+    }
+});
+
+export function SetCylinderHeight(distance2, degree2) {
+    distance2 != null && (_distance2 = distance2)
+    degree2 !=  null && (_degree2 = degree2)
+
+
+    let dragginCircle = document.querySelector("#dragginCircle")
+    console.log(dragginCircle)
+    dragginCircle != null && dragginCircle.removeAttribute("line-draggin-cylinder-base")
+    let dragginSphere = document.querySelector("#dragginSphere")
+    dragginSphere != null && dragginSphere.remove()
+    
+    let topCircle = document.createElement("a-entity")
+    topCircle.setAttribute("id", "dragginCircleTop")
+    topCircle.setAttribute("position", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z)
+    topCircle.setAttribute("rotation", "90 0 0")
+    topCircle.setAttribute("geometry", {
+        primitive: "circle",
+        radius: _radius
+    })
+    topCircle.setAttribute("material", {
+        color: "white",
+        opacity: .3,
+        side: "double"
+    })
+        
+    let line = document.createElement("a-entity")
+    line.setAttribute("id", "dragginLine")
+    line.setAttribute("line", "start", _originPoint.x + " " + _originPoint.y + " " + _originPoint.z)
+    line.setAttribute("line", "end", "")
+    line.setAttribute("line", "color", "blue")
+    line.setAttribute("line-draggin-cylinder-height", "")
+
+    _scene.appendChild(topCircle)
+    _scene.appendChild(line)
+}
+
+AFRAME.registerComponent('line-draggin-cylinder-height', {
+    tick: function () {
         let cameraRotationVertical = NormalizeAngleInRadians(_cameraRotation.x)
-        let distance2 = Math.abs(intersection.distance * Math.sin((Math.PI / 2) - cameraRotationVertical))
+        let diffFirstVerticalAngleAndCurrent = cameraRotationVertical - _degree2.vertical
 
-        let size = CalculateSize(_distance1, distance2, _degree1.horizontal, cameraRotationHorizontal)
+        _height = Math.tan(diffFirstVerticalAngleAndCurrent) * _distance2
+        let targetPoint = new THREE.Vector3(_originPoint.x, _originPoint.y + _height, _originPoint.z)
+        this.el.setAttribute("line", "end", targetPoint)
+        let dragginCylinderTop = document.querySelector("#dragginCircleTop")
+        dragginCylinderTop != null && dragginCylinderTop.setAttribute("position", targetPoint)
 
-        CreateOrModifyBaseGuideLine(_originPoint, (_originPoint.x + size.x), "startLineX", "x")       
     }
 });
 
@@ -343,23 +450,23 @@ AFRAME.registerComponent('line-draggin-cube', {
 
         let lines = document.querySelectorAll(".temporalGizmo")
         lines.forEach(line => {
-            if(line.getAttribute("id") == "startLineX") 
+            if (line.getAttribute("id") == "startLineX")
                 baseLine1 = line.getAttribute("line")
-            else if(line.getAttribute("id") == "endLineX")
+            else if (line.getAttribute("id") == "endLineX")
                 baseLine2 = line.getAttribute("line")
         })
-    
-        if(baseLine1 != null && baseLine2) {
+
+        if (baseLine1 != null && baseLine2) {
             let newOriginStart = new THREE.Vector3(baseLine1.start.x, baseLine1.start.y + height, baseLine1.start.z)
             let newOriginEnd = new THREE.Vector3(baseLine2.start.x, baseLine2.start.y + height, baseLine2.start.z)
-    
+
             CreateOrModifyCubeGuideLine(newOriginStart, baseLine2.end, "startLineUpX")
             CreateOrModifyCubeGuideLine(newOriginStart, baseLine1.end, "startLineUpZ")
             CreateOrModifyCubeGuideLine(newOriginEnd, baseLine1.end, "endLineUpZ")
             CreateOrModifyCubeGuideLine(newOriginEnd, baseLine2.end, "endLineUpX")
         }
-        }
-    });
+    }
+});
 
 
 export function SetOffset(distance2, degree2) {

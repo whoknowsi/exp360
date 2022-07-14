@@ -1,4 +1,4 @@
-import {RemoveTarget, AddTarget, GetCurrentTarget, MapInterval} from "./helper.js"
+import {RemoveTarget, AddTarget, GetCurrentTarget, MapInterval, NormalizeAngleInRadians} from "./helper.js"
 
 var cursorPrev
 
@@ -19,6 +19,48 @@ AFRAME.registerComponent('raycaster-listener', {
             this.raycaster = null;
             RemoveTarget(this.el);
         });
+
+        this.el.addEventListener('click', evt => {
+
+            
+            if(evt.detail.cursorEl.getAttribute("id") == "cursor-prev-raycast") {
+                //ChangeSky(data, el, sky1, sky2, radiusSkyProportion)
+                let raycaster = document.querySelector("#cursor-prev-raycast").components.raycaster
+                let intersection = raycaster.getIntersection(this.el)
+                let structureContainerPosition = document.querySelector("#structure-container").getAttribute("position")
+
+                if(intersection == null) { return }
+
+                let point = {
+                    x: intersection.point.x - structureContainerPosition.x,
+                    y: intersection.point.y - structureContainerPosition.y,
+                    z: intersection.point.z - structureContainerPosition.z
+                }
+                let skySpots = document.querySelectorAll(".skyChanger")
+                let closestSkySpotDistance = 100000
+                let closetsSkySpot
+
+                console.log(point)
+
+                skySpots.forEach(spot => {
+                    let spotPosition = spot.getAttribute("position")
+                    let distance = Math.sqrt((point.x - spotPosition.x) * (point.x - spotPosition.x) + 
+                    (point.y - spotPosition.y) * (point.y - spotPosition.y) + 
+                    (point.z - spotPosition.z) *(point.z - spotPosition.z))
+
+                    if(distance < closestSkySpotDistance) {
+                        closestSkySpotDistance = distance
+                        closetsSkySpot = spot
+                    }
+                    
+                });
+                console.log(closetsSkySpot)
+
+                closetsSkySpot.click()
+                console.log("test")
+            }
+                
+        })
     },
     tick: function () {
         if (!this.raycaster) { return }
@@ -38,7 +80,7 @@ AFRAME.registerComponent('raycaster-listener', {
 
         cursorPrev.setAttribute("visible", "true")
         CursorManagment(this.intersection, target, this.cornerValue)
-        
+
     }
 });
 
@@ -49,6 +91,7 @@ function CursorManagment(intersection, target, cornerValue) {
     let cornersToRotate = target.getAttribute("rotate-corner")
     let scale = 3/(1 + distance*2)
     let edge
+    let cameraRotationHorizontal = NormalizeAngleInRadians(document.querySelector("#camera").getAttribute("rotation").y)
     
     if(cornersToRotate == "") {
         edge = new THREE.Vector3(0,0,0);
@@ -58,9 +101,15 @@ function CursorManagment(intersection, target, cornerValue) {
          // Para que cuando uno deje de ser enfocado se enfoque el siguiente
         edge = RotateOnCorners(target, intersection, cornerValue)
     }
+    
+    let correctedNormal = normal
+
+    if(normal.x < 0.99 && normal.x > -0.99 && (cameraRotationHorizontal > (Math.PI/2) && cameraRotationHorizontal < (Math.PI*3)/2)) {
+        correctedNormal = new THREE.Vector3(-normal.x, normal.y, normal.z)
+    }
 
     cursorPrev.setAttribute("position", intersection.point.x + " " + intersection.point.y + " " + intersection.point.z)
-    cursorPrev.setAttribute("rotation", (90*normal.y + edge.y) + " " + (90*normal.x  + edge.x) + " " + (90*normal.z))
+    cursorPrev.setAttribute("rotation", (90*correctedNormal.y) + " " + (90*correctedNormal.x) + " " + (90*correctedNormal.z))
 }
 
 function RotateOnCorners(target, intersection, cornerValue) {

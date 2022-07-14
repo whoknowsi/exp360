@@ -83,6 +83,11 @@ var OnMouseDown = function(evt) {
     document.addEventListener("resize", OnResize)
 }
 
+var OnResize = function() {
+    innerHeight = window.innerHeight
+    innerWidth = window.innerWidth
+}
+
 var OnMouseUp = function() {
     camera.setAttribute("look-controls", "enabled", "true")
     startPoint = null

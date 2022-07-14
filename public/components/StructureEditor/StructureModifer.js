@@ -1,4 +1,5 @@
 import { StartDragginElement, LoseFocus, HasTarget, GetTargetId, IsDraggin } from "./ElementMovement.js"
+import { ShowDeleteButton, RemoveDeleteButton } from "./ElementDelete.js"
 
 let cursor = document.querySelector("#raycaster-mouse-edit")
 let camera = document.querySelector("#camera")
@@ -26,6 +27,7 @@ var OnMouseUp = function() {
 
         if(intersection == undefined && HasTarget()) { 
             LoseFocus()
+            RemoveDeleteButton()
             return
         } else if (intersection == undefined) {
             return
@@ -37,7 +39,7 @@ var OnMouseUp = function() {
         if(HasTarget()) { LoseFocus() }
 
         StartDragginElement(id)
-
+        ShowDeleteButton(id)
         // cursor.removeEventListener("mousedown", OnMouseDown)
         // cursor.removeEventListener("mouseup", OnMouseUp)
     }

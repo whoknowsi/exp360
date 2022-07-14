@@ -1,3 +1,4 @@
+import { Height } from "../GlobalConfig.js"
 import { MapInterval, NormalizeAngleInRadians } from "../helper.js"
 let innerWidth, innerHeight
 let point
@@ -33,7 +34,7 @@ export function ShowPanelInfo(target, intersection, title, description, image) {
 
 
     angleBetweenHorizontalAndY = Math.acos((Math.sqrt(point.z*point.z + point.x*point.x))/intersection.distance)
-    if(target.getAttribute("position").y >= 1.6) angleBetweenHorizontalAndY = -angleBetweenHorizontalAndY
+    if(target.getAttribute("position").y >= Height) angleBetweenHorizontalAndY = -angleBetweenHorizontalAndY
 
     CreatePanel(title, description, image)
 

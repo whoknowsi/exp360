@@ -1,4 +1,4 @@
-import { NormalizeAngleInRadians, SetBase, SetVolume, CreateCube, SetOffset, SetCylinderBase } from "./helper.js"
+import { NormalizeAngleInRadians, SetBase, SetVolume, CreateCube, SetOffset, SetCylinderBase, SetCylinderHeight, CreateCylinder } from "./helper.js"
 import { ChangeTargetEditRaycaster } from "./raycaster-listener.js"
 
 const delta = 6;
@@ -187,7 +187,6 @@ function SetParamsCylinderWhenClick(event) {
             horizontal: cameraRotationHorizontal,
             vertical: cameraRotationVertical
         }
-
         SetCylinderBase(originPoint, distance1, degree1)
     }
     else if (distance2 == undefined) {
@@ -196,12 +195,12 @@ function SetParamsCylinderWhenClick(event) {
             horizontal: cameraRotationHorizontal,
             vertical: cameraRotationVertical
         }
-        SetVolume(distance2, degree2)
+        SetCylinderHeight(distance2, degree2)
     }
     else if(distance3 == undefined) {
         distance3 = distancesOriginFloorToPoint
 
-        CreateCube()
+        CreateCylinder()
         UnsuscribeFromEvents()
         CleanVariables()
     }

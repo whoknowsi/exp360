@@ -37,8 +37,8 @@ export function SetInfoPointDialog() {
     settingLine.remove()
 
     infoContainer = document.createElement("a-entity")
-    let id = "info-spot-" + Date.now()
-    infoContainer.setAttribute("id", id)
+    let id = Date.now()
+    infoContainer.setAttribute("id", "container-info-spot-" + id)
     let line = document.createElement("a-entity")
     line.setAttribute("line", "start", relativeStart)
     line.setAttribute("line", "end", relativeEnd)
@@ -51,12 +51,12 @@ export function SetInfoPointDialog() {
     structureContainer.appendChild(infoContainer)
 
 
-    SetDialog(relativeEnd)
+    SetDialog(relativeEnd, id)
 
 }
 
-function SetDialog(point) {
-    CreateDialogeSpotPoint(point)
+function SetDialog(point, id) {
+    CreateDialogeSpotPoint(point, id)
     ShowPanel()
 }
 
@@ -84,13 +84,14 @@ function ClosePanel() {
     ChangeTargetEditRaycasterMouse(".positionModifierArrow")
 }
 
-function CreateDialogeSpotPoint(point) {
+function CreateDialogeSpotPoint(point, id) {
     dialogSpot = document.createElement("a-image")
     dialogSpot.setAttribute("src", "#infoSpot-img")
+    dialogSpot.setAttribute("id", "info-spot-" + id)
     dialogSpot.setAttribute("geometry", "primitive", "circle")
     dialogSpot.setAttribute("geometry", "radius", ".1")
     dialogSpot.setAttribute("position", (point.x + (normal.x * .1)) + " " + (point.y + (normal.y * .1)) + " " + (point.z + (normal.z * .1)))
-    dialogSpot.setAttribute("class", "infoSpotPointer")
+    dialogSpot.setAttribute("class", "infoSpot")
     dialogSpot.setAttribute("info-spot", "")
 
     infoContainer.appendChild(dialogSpot)

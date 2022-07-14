@@ -23,8 +23,12 @@ function DisplaySkies() {
     let skyContainer = document.createElement("div")
     skyContainer.classList.add("skyButtonContainer")
     skyImages.forEach(skyImage => {
-        let newButton = document.createElement("button")
         let id = skyImage.getAttribute("id")
+
+        let existSkySpot = document.querySelector("#" + id + "-pointer")
+        if(existSkySpot != null) { return }
+
+        let newButton = document.createElement("button")
         newButton.innerText = id
         newButton.addEventListener("click", () => {
             ShowButtonRotateSky()
@@ -157,6 +161,8 @@ function CrateFinishButton(id) {
         box.setAttribute("height", ".2")
         box.setAttribute("depth", "1")
         box.setAttribute("color", "#7BC8A4")
+        document.querySelector(".current") == null && box.classList.add("current")
+
         let sky2Rotation = sky2.getAttribute("rotation")
         let sky1Rotation = sky1.getAttribute("rotation")
         let currentRotation = (sky2Rotation.x + " " + sky2Rotation.y + " " + sky2Rotation.z)
